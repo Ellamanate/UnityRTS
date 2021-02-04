@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f8b86241e35e8f40a5308fc3efb1fce, type: 3}
+  m_Name: PhysicalDamage
+  m_EditorClassIdentifier: 
+  DamageForArmorType:
+  - ArmorType: {fileID: 11400000, guid: 4f1582f120c756547b8c3792408f98f4, type: 2}
+    DamageByArmor: 1
+  - ArmorType: {fileID: 11400000, guid: 4de0e74deb05dae44aaa4b5c4b14fecf, type: 2}
+    DamageByArmor: 1
+  - ArmorType: {fileID: 11400000, guid: fbfc2422f27a7db45a82bef721f66334, type: 2}
+    DamageByArmor: 1
+  - ArmorType: {fileID: 11400000, guid: 74b3f3f797ffc8e40ae8fd21f03fc745, type: 2}
+    DamageByArmor: 1

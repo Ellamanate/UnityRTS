@@ -8,7 +8,7 @@ public interface IDamageable
     
     int CurrentHP { get; set; }
 
-    Armor ArmorType { get; set; }
+    ArmorType ArmorType { get; set; }
 
     Collider HitBox { get; }
 

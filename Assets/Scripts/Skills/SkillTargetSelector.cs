@@ -1,36 +1,32 @@
 ﻿using UnityEngine;
 
 
-public class SkillTargetSelector
+public abstract class SkillTargetSelector
 {
-    public SkillTargetSelector(ProtoSkill _skill, bool _selectingTarget)
-    {
-        _skill.SelectingTarget = _selectingTarget;
-    }
-
+    public virtual bool IsSelectingTarget() { return false; }
     public virtual void SelectTarget(SkillManager _skillManager) { }
 }
 
 public class SelectNobody : SkillTargetSelector
 {
-    public SelectNobody(ProtoSkill _skill) : base(_skill, false) { }
+    public override bool IsSelectingTarget() { return false; }
 
     public override void SelectTarget(SkillManager _skillManager)
     {
-        _skillManager.SkillTarget.SetTargrtPoint(_skillManager.Caster.transform.position);
+        _skillManager.SkillTarget = _skillManager.Caster.transform.position;
         _skillManager.CastSkill();
     }
 }
 
 public class SelectBody : SkillTargetSelector
 {
-    public SelectBody(ProtoSkill _skill) : base(_skill, true) { }
+    public override bool IsSelectingTarget() { return true; }
 
     public override void SelectTarget(SkillManager _skillManager)
     {
         if (Raycaster.Instance.SelectMouseRaycast(out Rigidbody _attachedRigidbody))
         {
-            _skillManager.SkillTarget.SetBody(_attachedRigidbody.GetComponent<IDamageable>());
+            _skillManager.SkillTarget = _attachedRigidbody.GetComponent<IDamageable>();
             _skillManager.CastSkill();
             return;
         }
@@ -41,13 +37,13 @@ public class SelectBody : SkillTargetSelector
 
 public class SelectVector : SkillTargetSelector
 {
-    public SelectVector(ProtoSkill _skill) : base(_skill, true) { }
+    public override bool IsSelectingTarget() { return true; }
 
     public override void SelectTarget(SkillManager _skillManager)
     {
         if (Raycaster.Instance.DefaultMouseRaycast(out RaycastHit _hitInfo))
         {
-            _skillManager.SkillTarget.SetTargrtPoint(_hitInfo.point);
+            _skillManager.SkillTarget = _hitInfo.point;
             _skillManager.CastSkill();
             return;
         }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Linq;
 
 
 public class SkillPainter 
@@ -25,7 +26,7 @@ public class SkillPainter
             if (_selectedUnit.GetComponent<SkillCaster>() != null)
             {
                 SkillManager _skillManager = _selectedUnit.GetComponent<SkillCaster>().SkillManager;
-                Transform[] _skillParents = _skillsUIPool.GetObjects(_skillManager.Skills.Count);
+                Transform[] _skillParents = _skillsUIPool.GetObjects(_skillManager.Caster.Skills.Count);
                 _skills.Clear();
 
                 for (int i = 0; i < _skillParents.Length; i++)
@@ -61,16 +62,14 @@ public class SkillPainter
         if (_skillManager != _currentSkillManager)
         {
             for (int i = 0; i < _skills.Count; i++)
-                _skillManager.Skills[i].Tick -= _skills[i].UpdateCounter;
+                _skillManager.Caster.Skills.ElementAt(i).Tick -= _skills[i].UpdateCounter;
 
             _currentSkillManager = _skillManager;
 
             for (int i = 0; i < _skills.Count; i++)
             {
-                _skills[i].SkillData = _skillManager.Skills[i];
-                _skills[i].SkillManager = _skillManager;
-                _skills[i].UpdateCounter();
-                _skillManager.Skills[i].Tick += _skills[i].UpdateCounter;
+                _skills[i].SetSkillManager(_skillManager, i);
+                _skillManager.Caster.Skills.ElementAt(i).Tick += _skills[i].UpdateCounter;
             }
         }
     }

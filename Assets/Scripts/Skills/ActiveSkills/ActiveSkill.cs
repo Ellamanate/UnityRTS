@@ -1,24 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 
-public class ActiveSkill : ProtoSkill
+public abstract class ActiveSkill : ProtoSkill
 {
-    public int ManaCost;
+    public int ManaCost { get => _manaCost; }
 
-    public ActiveSkill() { CanActivate = true; }
+    [SerializeField] private int _manaCost;
 
-    public override void Activate(SkillCaster _caster, SkillTarget _target)
+    public ActiveSkill(SkillTargetSelector _skillTargetSelector) : base(_skillTargetSelector, true) { }
+
+    public override void Activate(SkillCaster _caster, object _target)
     {
-        if (_caster.CurrentMP >= ManaCost)
+        if (_caster.CurrentMP >= _manaCost)
         {
-            _caster.CurrentMP -= ManaCost;
+            _caster.CurrentMP -= _manaCost;
             Effect(_caster, _target);
         }
     }
 
-    public virtual void Effect(SkillCaster _caster, SkillTarget _target) { }
+    public virtual void Effect(SkillCaster _caster, object _target) { }
 }
 
 

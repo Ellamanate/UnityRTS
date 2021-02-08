@@ -6,13 +6,13 @@ using System.Collections.Generic;
 [CreateAssetMenu(fileName = "Damage", menuName = "Damage", order = 1)]
 public class DamageType : ScriptableObject
 {
-    public List<Damage> DamageForArmorType = new List<Damage>();
+    [SerializeField] private List<Damage> DamageForArmorType = new List<Damage>();
 
-    public int DecreaseDamage(Armor _armor, int _damageValue) 
+    public int DecreaseDamage(ArmorType _currentArmorType, int _damageValue) 
     { 
         foreach (Damage _damage in DamageForArmorType)
         {
-            if (_damage.ArmorType == _armor)
+            if (_damage.ArmorType == _currentArmorType)
                 return Mathf.RoundToInt(_damage.DamageByArmor * _damageValue);
         }
 
@@ -23,6 +23,6 @@ public class DamageType : ScriptableObject
 [System.Serializable]
 public class Damage
 {
-    public Armor ArmorType;
+    public ArmorType ArmorType;
     [Range(0, 1)] public float DamageByArmor;
 }

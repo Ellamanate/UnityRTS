@@ -129,12 +129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a598e158f823fb40bfc814a8d058e85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Icon: {fileID: 5101580477668407634}
-  Counter: {fileID: 5101580477082805674}
-  SkillData:
-    Skill: {fileID: 0}
-    Timer: 0
-    Ready: 0
+  _counter: {fileID: 5101580477082805674}
 --- !u!222 &5101580477668407633
 CanvasRenderer:
   m_ObjectHideFlags: 0

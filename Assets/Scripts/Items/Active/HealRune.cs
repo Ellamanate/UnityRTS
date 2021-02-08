@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class HealRune : ActiveItem
 {
-    public int HealValue;
+    [SerializeField] private int _healValue;
 
     public override void Activate(Unit _owner, ItemPrefab _prefab)
     {
-        _owner.CurrentHP += HealValue;
+        _owner.CurrentHP += _healValue;
     }
 
     [MenuItem("Assets/Create/Items/Active/HealRune", false, 1)]

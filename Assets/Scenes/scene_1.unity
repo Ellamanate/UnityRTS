@@ -1107,9 +1107,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 868702ad098190f489104dd7d61add51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Items: []
-  PoolTransform: {fileID: 783769339}
-  DefaultBackpackSize: 6
+  _defaultBackpackSize: 6
+  _poolTransform: {fileID: 783769339}
 --- !u!114 &119727734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8894,20 +8893,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13fe248f4b41c654780621f649da2221, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Canvas: {fileID: 1004087992}
-  m_EventSystem: {fileID: 652709387}
-  m_Raycaster: {fileID: 1004087990}
-  HealthBar: {fileID: 1435249942}
-  ManaBar: {fileID: 1721313927}
-  SelectedIcon: {fileID: 1942518145}
-  DefaultIcon: {fileID: 0}
-  ItemsPanel: {fileID: 270977921}
-  SkillsPanel: {fileID: 645245968}
-  SkillPrefab: {fileID: 8878411627266283266, guid: 00f378c8229336745acc4d192a2b379d,
+  "_\u0441anvas": {fileID: 1004087992}
+  _eventSystem: {fileID: 652709387}
+  _raycaster: {fileID: 1004087990}
+  _healthBar: {fileID: 1435249942}
+  _manaBar: {fileID: 1721313927}
+  _selectedIcon: {fileID: 1942518145}
+  _defaultIcon: {fileID: 0}
+  _itemsPanel: {fileID: 270977921}
+  _skillsPanel: {fileID: 645245968}
+  _skillPrefab: {fileID: 8878411627266283266, guid: 00f378c8229336745acc4d192a2b379d,
     type: 3}
-  ItemSlotPrefab: {fileID: -6418965891958425376, guid: c3cb6f8f1e45cab4abcde886ba071071,
+  _itemSlotPrefab: {fileID: -6418965891958425376, guid: c3cb6f8f1e45cab4abcde886ba071071,
     type: 3}
-  Pool: {fileID: 590925340}
+  _pool: {fileID: 590925340}
 --- !u!1 &1004574598
 GameObject:
   m_ObjectHideFlags: 0
@@ -10452,11 +10451,6 @@ MonoBehaviour:
   _icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   _maxHP: 25
   _currentHP: 0
-  _worldUIContainer:
-    TargetTransform: {fileID: 1135521949}
-    ContainerTransform: {fileID: 0}
-    Highlighter: {fileID: 0}
-    HealthBar: {fileID: 0}
   _healthBarStartPos: {x: 0, y: 4, z: 0}
   _characterAnimator: {fileID: 1135521955}
   _characterAttack: {fileID: 1296513901}
@@ -10720,16 +10714,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58602721ad2760848bddb4defb67a428, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Skills:
-  - Skill: {fileID: 11400000, guid: dac3178130173be4fbf8581136afa02d, type: 2}
-    Timer: 0
-    Ready: 0
-  - Skill: {fileID: 11400000, guid: 60816a30a5571574ba05d5c611cd59b0, type: 2}
-    Timer: 0
-    Ready: 0
-  - Skill: {fileID: 11400000, guid: 4208edc6db2c4d34bacf1ebddf93ea9d, type: 2}
-    Timer: 0
-    Ready: 0
+  _skills:
+  - _skill: {fileID: 11400000, guid: 8c0dce1d45a1bf6458f6aa04834c1c5a, type: 2}
+  - _skill: {fileID: 11400000, guid: 60816a30a5571574ba05d5c611cd59b0, type: 2}
+  - _skill: {fileID: 11400000, guid: 4208edc6db2c4d34bacf1ebddf93ea9d, type: 2}
   _maxMP: 100
   _currentMP: 0
 --- !u!114 &1150438315
@@ -10744,8 +10732,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32ed04a2443376d47a5d1c884365c9f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxSize: 0
-  Owner: {fileID: 1150438316}
+  _maxSize: 0
 --- !u!114 &1150438316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10763,11 +10750,6 @@ MonoBehaviour:
   _icon: {fileID: 21300000, guid: fd6e4fc32c78509458fc45ea4a478ba8, type: 3}
   _maxHP: 100
   _currentHP: 0
-  _worldUIContainer:
-    TargetTransform: {fileID: 1150438307}
-    ContainerTransform: {fileID: 0}
-    Highlighter: {fileID: 0}
-    HealthBar: {fileID: 0}
   _healthBarStartPos: {x: 0, y: 4, z: 0}
   _characterAnimator: {fileID: 1150438313}
   _characterAttack: {fileID: 609844031}
@@ -11799,11 +11781,6 @@ MonoBehaviour:
   _icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   _maxHP: 25
   _currentHP: 0
-  _worldUIContainer:
-    TargetTransform: {fileID: 1233701943}
-    ContainerTransform: {fileID: 0}
-    Highlighter: {fileID: 0}
-    HealthBar: {fileID: 0}
   _healthBarStartPos: {x: 0, y: 4, z: 0}
   _characterAnimator: {fileID: 1233701949}
   _characterAttack: {fileID: 1984177691}
@@ -16220,11 +16197,6 @@ MonoBehaviour:
   _icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   _maxHP: 25
   _currentHP: 0
-  _worldUIContainer:
-    TargetTransform: {fileID: 1686510761}
-    ContainerTransform: {fileID: 0}
-    Highlighter: {fileID: 0}
-    HealthBar: {fileID: 0}
   _healthBarStartPos: {x: 0, y: 4, z: 0}
   _characterAnimator: {fileID: 1686510767}
   _characterAttack: {fileID: 415454326}
@@ -17869,17 +17841,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cb241505422c6b4884b4785b6b8d7b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Canvas: {fileID: 1851291139}
-  HealthBarPrefab: {fileID: 4492736100034858949, guid: b53ff28ea104db440b8de9abf0032d73,
+  _canvas: {fileID: 1851291139}
+  _healthBarPrefab: {fileID: 4492736100034858949, guid: b53ff28ea104db440b8de9abf0032d73,
     type: 3}
-  HighliterPrefab: {fileID: 2328050315058977160, guid: 41e75fcdd276d344b8244364a2584de9,
+  _highliterPrefab: {fileID: 2328050315058977160, guid: 41e75fcdd276d344b8244364a2584de9,
     type: 3}
-  UnitsColor:
-    PlayerColor: {r: 0.35299918, g: 0.8584906, b: 0.1579299, a: 1}
-    EnemyColor: {r: 0.7264151, g: 0.01027944, b: 0.01027944, a: 1}
-    NeutralColor: {r: 0.8867924, g: 0.8615884, b: 0.28025985, a: 1}
-  HilightersPool: {fileID: 395634081}
-  _highliters: []
+  _unitsColor:
+    PlayerColor: {r: 0, g: 0.6320754, b: 0.13385133, a: 1}
+    EnemyColor: {r: 0.7075472, g: 0, b: 0, a: 1}
+    NeutralColor: {r: 0.6886792, g: 0.6417194, b: 0, a: 1}
+  _hilightersPool: {fileID: 395634081}
 --- !u!1 &1859061727
 GameObject:
   m_ObjectHideFlags: 0
@@ -18374,16 +18345,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58602721ad2760848bddb4defb67a428, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Skills:
-  - Skill: {fileID: 11400000, guid: dac3178130173be4fbf8581136afa02d, type: 2}
-    Timer: 0
-    Ready: 0
-  - Skill: {fileID: 11400000, guid: 60816a30a5571574ba05d5c611cd59b0, type: 2}
-    Timer: 0
-    Ready: 0
-  - Skill: {fileID: 11400000, guid: 4208edc6db2c4d34bacf1ebddf93ea9d, type: 2}
-    Timer: 0
-    Ready: 0
+  _skills:
+  - _skill: {fileID: 11400000, guid: 8c0dce1d45a1bf6458f6aa04834c1c5a, type: 2}
+  - _skill: {fileID: 11400000, guid: 60816a30a5571574ba05d5c611cd59b0, type: 2}
+  - _skill: {fileID: 11400000, guid: 4208edc6db2c4d34bacf1ebddf93ea9d, type: 2}
   _maxMP: 100
   _currentMP: 0
 --- !u!114 &1903427587
@@ -18414,8 +18379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32ed04a2443376d47a5d1c884365c9f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxSize: 0
-  Owner: {fileID: 1903427589}
+  _maxSize: 0
 --- !u!114 &1903427589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18433,11 +18397,6 @@ MonoBehaviour:
   _icon: {fileID: 21300000, guid: fd6e4fc32c78509458fc45ea4a478ba8, type: 3}
   _maxHP: 100
   _currentHP: 0
-  _worldUIContainer:
-    TargetTransform: {fileID: 1903427594}
-    ContainerTransform: {fileID: 0}
-    Highlighter: {fileID: 0}
-    HealthBar: {fileID: 0}
   _healthBarStartPos: {x: 0, y: 4, z: 0}
   _characterAnimator: {fileID: 1903427587}
   _characterAttack: {fileID: 1374499868}
@@ -20869,11 +20828,6 @@ MonoBehaviour:
   _icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   _maxHP: 25
   _currentHP: 0
-  _worldUIContainer:
-    TargetTransform: {fileID: 1666553375956420588}
-    ContainerTransform: {fileID: 0}
-    Highlighter: {fileID: 0}
-    HealthBar: {fileID: 0}
   _healthBarStartPos: {x: 0, y: 4, z: 0}
   _characterAnimator: {fileID: 1666553375956392466}
   _characterAttack: {fileID: 145948555}
@@ -22768,11 +22722,6 @@ MonoBehaviour:
   _icon: {fileID: 0}
   _maxHP: 10
   _currentHP: 0
-  _worldUIContainer:
-    TargetTransform: {fileID: 2872607031815826430}
-    ContainerTransform: {fileID: 0}
-    Highlighter: {fileID: 0}
-    HealthBar: {fileID: 0}
   BaseItem: {fileID: 11400000, guid: 94c91d728ceeb8743aeb992f71f8321e, type: 2}
 --- !u!4 &2872607031815826430
 Transform:
@@ -22841,11 +22790,6 @@ MonoBehaviour:
   _icon: {fileID: 0}
   _maxHP: 10
   _currentHP: 0
-  _worldUIContainer:
-    TargetTransform: {fileID: 2872607032088873404}
-    ContainerTransform: {fileID: 0}
-    Highlighter: {fileID: 0}
-    HealthBar: {fileID: 0}
   BaseItem: {fileID: 11400000, guid: 83548aa7321e874448bbb5b314fb2939, type: 2}
 --- !u!4 &2872607032088873404
 Transform:

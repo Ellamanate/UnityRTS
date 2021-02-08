@@ -12,8 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb41fd9f96014e44787655d565f1e950, type: 3}
   m_Name: Heal
   m_EditorClassIdentifier: 
-  CoolDown: 2
-  SelectingTarget: 1
-  CanActivate: 1
-  ManaCost: 10
-  HealValue: 10
+  _coolDown: 2
+  _manaCost: 10
+  _healValue: 10

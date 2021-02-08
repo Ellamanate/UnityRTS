@@ -1,6 +1,4 @@
-﻿using UnityEditor;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 
@@ -32,7 +30,7 @@ public class BackpackPainter
             if (_selectedUnit.GetComponent<Backpack>() != null)
             {
                 _currentBackpack = _selectedUnit.GetComponent<Backpack>();
-                Dictionary<int, ItemPrefab> _items = _currentBackpack.GetItems();
+                var _items = _currentBackpack.GetItems();
 
                 for (int i = 0; i < _slots.Count; i++)
                 {

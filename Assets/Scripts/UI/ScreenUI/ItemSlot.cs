@@ -5,22 +5,15 @@ using UnityEngine.EventSystems;
 
 public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
-    public Image Image;
-    public Sprite DefaultIcon;
-    public StoredItem StoredItem;
+    public Sprite CurrentIcon { get => _image.sprite; }
+    public Sprite DefaultIcon { get => _defaultIcon; }
+    public StoredItem StoredItem { get => _storedItem; }
+    public int? Id { get => _id; set => OnSetId(value); }
 
+    [SerializeField] private Sprite _defaultIcon;
+    [SerializeField] private Image _image;
+    private StoredItem _storedItem;
     private bool _isDraged;
-
-    public int? Id
-    { 
-        get { return _id; } 
-        set 
-        {
-            if (_id == null)
-                _id = value;
-        } 
-    }
-
     private int? _id = null;
 
     public void OnDrag(PointerEventData eventData) { }
@@ -45,13 +38,19 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler, IDragHandler, IBegi
 
     public void SetDefaultItem()
     {
-        Image.sprite = DefaultIcon;
-        StoredItem = null;
+        _image.sprite = _defaultIcon;
+        _storedItem = null;
     }
 
     public void SetItem(StoredItem _item)
     {
-        Image.sprite = _item.Icon;
-        StoredItem = _item;
+        _image.sprite = _item.Icon;
+        _storedItem = _item;
+    }
+
+    private void OnSetId(int? _newId)
+    {
+        if (_id == null)
+            _id = _newId;
     }
 }

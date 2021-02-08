@@ -1,24 +1,22 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 
 public class WorldUI : Singleton<WorldUI>
 {
-    public Canvas Canvas;
-    public Image HealthBarPrefab;
-    public GameObject HighliterPrefab;
-    public UnitsColor UnitsColor;
-    public Transform HilightersPool;
-    
-    public Transform[] _highliters;
+    [SerializeField] private Canvas _canvas;
+    [SerializeField] private Image _healthBarPrefab;
+    [SerializeField] private GameObject _highliterPrefab;
+    [SerializeField] private UnitsColor _unitsColor;
+    [SerializeField] private Transform _hilightersPool;
+    private Transform[] _highliters;
     private List<WorldUIContainer> UnitsUI = new List<WorldUIContainer>();
     private ObjectPool _objectPool;
 
     private void Awake()
     {
-        _objectPool = new ObjectPool(HighliterPrefab, HilightersPool);
+        _objectPool = new ObjectPool(_highliterPrefab, _hilightersPool);
     }
 
     private void OnEnable()
@@ -45,7 +43,7 @@ public class WorldUI : Singleton<WorldUI>
     {
         GameObject _container = new GameObject();
         _unitUI.ContainerTransform = _container.transform;
-        _container.transform.SetParent(Canvas.transform);
+        _container.transform.SetParent(_canvas.transform);
         UnitsUI.Add(_unitUI);
     }
 
@@ -64,7 +62,7 @@ public class WorldUI : Singleton<WorldUI>
 
     public void SetHealthBar(ISelectable _target, Vector3 _offset)
     {
-        Image _healthBarImage = Instantiate(HealthBarPrefab);
+        Image _healthBarImage = Instantiate(_healthBarPrefab);
         _healthBarImage.transform.SetParent(_target.WorldUIContainer.ContainerTransform);
         _healthBarImage.transform.localPosition = _offset;
         _target.WorldUIContainer.HealthBar = _healthBarImage;
@@ -107,11 +105,11 @@ public class WorldUI : Singleton<WorldUI>
         Color _color;
 
         if (_tag == GameManager.Instance.PlayersTag)
-            _color = UnitsColor.PlayerColor;
+            _color = _unitsColor.PlayerColor;
         else if (AllianceSystem.Instance.GetEnemyTags(GameManager.Instance.PlayersTag).Contains(_tag))
-            _color = UnitsColor.EnemyColor;
+            _color = _unitsColor.EnemyColor;
         else
-            _color = UnitsColor.NeutralColor;
+            _color = _unitsColor.NeutralColor;
 
         return _color;
     }

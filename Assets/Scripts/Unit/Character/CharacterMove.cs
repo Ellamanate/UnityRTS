@@ -19,12 +19,12 @@ public class CharacterMove : MonoBehaviour
     [SerializeField] private NavMeshAgent _navMeshAgent;
     [SerializeField] private NavMeshObstacle _navMeshObstacle;
     [SerializeField] private List<Transform> _patrolPoints = new List<Transform>();
-    private bool _block = false;
+    [SerializeField] private bool _block = false;
     [SerializeField] private bool _isMove = false;
     [SerializeField] private bool _isCalculatingPath = false;
     private Vector3 _targetPos;
     private Vector3 _gravity = new Vector3(0, -10, 0);
-    private IEnumerator _calculatePath;
+    private IEnumerator _repath;
 
     public void ResetPath()
     {
@@ -40,13 +40,18 @@ public class CharacterMove : MonoBehaviour
         if (!_block)
         {
             _targetPos = _point;
-            _isCalculatingPath = true;
+
+            if (!_isCalculatingPath)
+            {
+                _isCalculatingPath = true;
+                StartCoroutine(CalculatePath());
+            }
         }
     }
 
     private void OnEnable()
     {
-        StartCoroutine(_calculatePath);
+        StartCoroutine(_repath);
     }
 
     private void OnDisable()
@@ -60,7 +65,7 @@ public class CharacterMove : MonoBehaviour
         _navMeshAgent.angularSpeed = _angularSpeed;
         _navMeshAgent.stoppingDistance = _stoppingDistance;
         _targetPos = transform.position;
-        _calculatePath = CalculatePath(0.25f);
+        _repath = Repath(0.25f);
     }
 
     private void Update()
@@ -69,13 +74,14 @@ public class CharacterMove : MonoBehaviour
         {
             _controller.Move(_navMeshAgent.velocity * Time.deltaTime + _gravity);
 
-            //if (_navMeshAgent.remainingDistance <= (_navMeshAgent.velocity.normalized * _speed * Time.deltaTime).magnitude)
             if (_isMove & !_isCalculatingPath & _navMeshAgent.velocity.magnitude <= _stoppingDistance)
             {
-                PathComplete.Invoke();
                 _isMove = false;
                 _navMeshAgent.enabled = false;
                 _navMeshObstacle.enabled = true;
+
+                if (PathComplete != null)
+                    PathComplete.Invoke();
             }
         }
     } 
@@ -91,28 +97,34 @@ public class CharacterMove : MonoBehaviour
         return _block;
     }
 
-    private IEnumerator CalculatePath(float _delay)
+    private IEnumerator Repath(float _delay)
     {
         while (true)
         {
-            if (_isCalculatingPath)
-            {
-                if (!_navMeshAgent.enabled)
-                {
-                    _navMeshObstacle.enabled = false;
-                    yield return new WaitForEndOfFrame();
-                    _navMeshAgent.enabled = true;
-                }
-
-                _navMeshAgent.SetDestination(_targetPos);
-                yield return new WaitForEndOfFrame();
-
-                _isMove = true;
-                _isCalculatingPath = false;
-            }
-
+            yield return CalculatePath();
             yield return new WaitForSeconds(_delay);
         }
+    }
+
+    private IEnumerator CalculatePath()
+    {
+        if (_isCalculatingPath)
+        { 
+            if (!_navMeshAgent.enabled)
+            {
+                _navMeshObstacle.enabled = false;
+                yield return new WaitForEndOfFrame();
+                _navMeshAgent.enabled = true;
+            }
+
+            _navMeshAgent.SetDestination(_targetPos);
+            yield return new WaitForEndOfFrame();
+
+            _isMove = true;
+            _isCalculatingPath = false;
+        }
+
+        yield return null;
     }
 
     private Vector3 VectorXZ(Vector3 _vector)

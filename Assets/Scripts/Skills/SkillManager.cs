@@ -1,36 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
+using System.Linq;
 
 
 public class SkillManager
 {
-    public SkillCaster Caster;
-    public List<SkillData> Skills;
-    public SkillData CurrentSkillData;
-    public SkillTarget SkillTarget;
+    public object SkillTarget;
+    public SkillCaster Caster { get => _caster; }
+    public SkillData CurrentSkillData { get => _currentSkillData; }
+
+    private SkillCaster _caster;
+    private SkillData _currentSkillData;
     private SkillTargetSelector _skillTargetSelector;
 
-    public SkillManager(SkillCaster _caster, List<SkillData> _skills) 
+    public SkillManager(SkillCaster _initCaster, IReadOnlyCollection<SkillData> _skills) 
     {
-        Caster = _caster;
-        Skills = _skills;
-        SkillTarget = new SkillTarget();
+        _caster = _initCaster;
 
-        for (int i = 0; i < Skills.Count; i++)
+        for (int i = 0; i < _caster.Skills.Count; i++)
         {
-            Skills[i].Ready = true;
-            Skills[i].Skill.OnStart(Caster);
+            _caster.Skills.ElementAt(i).Ready = true;
+            _caster.Skills.ElementAt(i).Skill.OnStart(Caster);
         }
     }
 
     public void TryCastSkill(int index)
     {
-        if (Skills.Count > index)
+        if (_caster.Skills.Count > index)
         {
-            CurrentSkillData = Skills[index];
-            _skillTargetSelector = CurrentSkillData.Skill.SkillTargetSelector;
+            _currentSkillData = _caster.Skills.ElementAt(index);
+            _skillTargetSelector = _currentSkillData.Skill.SkillTargetSelector;
             TryCastSkill();
         }
     }
@@ -39,8 +38,8 @@ public class SkillManager
     {
         if (_skillData != null)
         {
-            CurrentSkillData = _skillData;
-            _skillTargetSelector = CurrentSkillData.Skill.SkillTargetSelector;
+            _currentSkillData = _skillData;
+            _skillTargetSelector = _currentSkillData.Skill.SkillTargetSelector;
             TryCastSkill();
         }
     }
@@ -52,69 +51,25 @@ public class SkillManager
 
     public void CastSkill()
     {
-        CurrentSkillData.Skill.Activate(Caster, SkillTarget);
-        StartTimer(CurrentSkillData.Skill.CoolDown);
+        _currentSkillData.Skill.Activate(Caster, SkillTarget);
+        StartTimer(_currentSkillData.Skill.CoolDown);
         Events.OnSkillActivate.Publish(this);
     }
 
     private void StartTimer(float _time)
     {
-        IEnumerator _coroutine = CurrentSkillData.StartTimer(_time);
+        IEnumerator _coroutine = _currentSkillData.StartTimer(_time);
         GameManager.Instance.CreateCoroutine(_coroutine);
     }
 
     private void TryCastSkill()
     {
-        if (CurrentSkillData.Ready & CurrentSkillData.Skill.CanActivate)
+        if (_currentSkillData.Ready & _currentSkillData.Skill.CanActivate)
         {
-            if (CurrentSkillData.Skill.SelectingTarget)
+            if (_currentSkillData.Skill.SelectingTarget)
                 UnitManager.Instance.SkillTargetSelecting(this);
             else
                 SelectTarget();
         }
-    }
-}
-
-public class SkillTarget
-{
-    public IDamageable Body;
-    public Vector3? TargetPoint;
-
-    public void SetBody(IDamageable _body)
-    {
-        Body = _body;
-        TargetPoint = null;
-    }
-
-    public void SetTargrtPoint(Vector3 _targetPoint)
-    {
-        TargetPoint = _targetPoint;
-        Body = null;
-    }
-}
-
-[System.Serializable]
-public class SkillData
-{
-    public ProtoSkill Skill;
-    [HideInInspector] public int Timer;
-    [HideInInspector] public bool Ready;
-    [HideInInspector] public UnityAction Tick;
-
-    public IEnumerator StartTimer(float _time)
-    {
-        Timer = Mathf.RoundToInt(_time * 10);
-        Ready = false;
-
-        while (Timer > 0)
-        {
-            yield return new WaitForSeconds(0.1f);
-            Timer -= 1;
-
-            if (Tick != null)
-                Tick.Invoke();
-        }
-
-        Ready = true;
     }
 }

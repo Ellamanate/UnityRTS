@@ -4,16 +4,16 @@ using UnityEditor;
 
 public class Heal : ActiveSkill
 {
-    public int HealValue;
+    public int HealValue { get => _healValue; }
 
-    public Heal() { SkillTargetSelector = new SelectBody(this); }
+    [SerializeField] private int _healValue;
 
-    public override void Effect(SkillCaster _caster, SkillTarget _target)
+    public Heal() : base(new SelectBody()) { }
+
+    public override void Effect(SkillCaster _caster, object _target)
     {
-        if (_target.Body != null)
-        {
-            _target.Body.CurrentHP += HealValue;
-        }
+        if (TypeChecker<IDamageable>.CheckObject(_target, out IDamageable _damageable))
+            _damageable.CurrentHP += _healValue;
     }
 
     [MenuItem("Assets/Create/Skills/ActiveSkill/Heal", false, 1)]

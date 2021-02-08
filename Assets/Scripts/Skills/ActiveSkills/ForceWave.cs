@@ -4,18 +4,22 @@ using UnityEditor;
 
 public class ForceWave : ActiveSkill
 {
-    public int Damage;
-    public float Force;
-    public DamageWavePrefab Wave;
+    public int DamageValue { get => _damageValue; }
+    public int Force { get => _force; }
+    public DamageWavePrefab Wave { get => _wave; }
 
-    public ForceWave() { SkillTargetSelector = new SelectVector(this); }
+    [SerializeField] private int _damageValue;
+    [SerializeField] private int _force;
+    [SerializeField] private DamageWavePrefab _wave;
 
-    public override void Effect(SkillCaster _caster, SkillTarget _target)
+    public ForceWave() : base(new SelectVector()) { }
+
+    public override void Effect(SkillCaster _caster, object _target)
     {
-        if (_target.TargetPoint != null)
+        if (TypeChecker<Vector3>.CheckObject(_target, out Vector3 _vector))
         {
             DamageWavePrefab _wave = GameObject.Instantiate(Wave, _caster.transform.position, new Quaternion(0, 0, 0, 0));
-            _wave.Init(Damage, ((Vector3)(_target.TargetPoint - _caster.transform.position)).normalized * Force);
+            _wave.Init(_damageValue, (_vector - _caster.transform.position).normalized * Force);
         }
     }
 

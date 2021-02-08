@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -23,7 +22,7 @@ public class CharacterAttack : EnemyCollector
 
     public void SimpleAttack()
     {
-        if (Target != null & _targetCollision)
+        if (Target != null)
             Target.ApplyDamage(DamageType, Damage);
     }
 

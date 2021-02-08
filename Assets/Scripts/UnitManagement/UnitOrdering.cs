@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 
@@ -69,7 +68,7 @@ public class UnitOrdering
     private Vector3[] CalculateGroupPoints(Vector3 _targetPoint, IReadOnlyList<ISelectable> _selectedUnits)
     {
         ///// 
-        // Получение максимального размера юнита в группе
+        // Здесь получение максимального размера юнита в группе
 
         float _maxUnitSize = 2;
         /////

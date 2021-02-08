@@ -6,19 +6,18 @@ using UnityEngine.UI;
 
 public class ScreenUI : Singleton<ScreenUI>
 {
-    public Canvas Canvas;
-    public EventSystem m_EventSystem;
-    public GraphicRaycaster m_Raycaster;
-    public Image HealthBar;
-    public Image ManaBar;
-    public Image SelectedIcon;
-    public Sprite DefaultIcon;
-    public RectTransform ItemsPanel;
-    public RectTransform SkillsPanel;
-    public SkillUI SkillPrefab;
-    public ItemSlot ItemSlotPrefab;
-    public RectTransform Pool;
-
+    [SerializeField] private Canvas _сanvas;
+    [SerializeField] private EventSystem _eventSystem;
+    [SerializeField] private GraphicRaycaster _raycaster;
+    [SerializeField] private Image _healthBar;
+    [SerializeField] private Image _manaBar;
+    [SerializeField] private Image _selectedIcon;
+    [SerializeField] private Sprite _defaultIcon;
+    [SerializeField] private RectTransform _itemsPanel;
+    [SerializeField] private RectTransform _skillsPanel;
+    [SerializeField] private SkillUI _skillPrefab;
+    [SerializeField] private ItemSlot _itemSlotPrefab;
+    [SerializeField] private RectTransform _pool;
     private ISelectable _selectedUnit;
     private BackpackPainter _backpackPainter;
     private SkillPainter _skillPainter;
@@ -28,7 +27,7 @@ public class ScreenUI : Singleton<ScreenUI>
         if (_selectedList.Count > 0)
         {
             _selectedUnit = _selectedList[0];
-            SelectedIcon.sprite = _selectedUnit.Icon;
+            _selectedIcon.sprite = _selectedUnit.Icon;
 
             _skillPainter.PaintSkills(_selectedList[0] as Unit);
             _backpackPainter.PaintItems(_selectedList[0] as Unit);
@@ -42,7 +41,7 @@ public class ScreenUI : Singleton<ScreenUI>
     {
         if (_selectedUnit != null & _damageable != null)
             if (_damageable.GameObject == _selectedUnit.GameObject)
-                HealthBar.fillAmount = (float)_damageable.CurrentHP / (float)_damageable.MaxHP;
+                _healthBar.fillAmount = (float)_damageable.CurrentHP / (float)_damageable.MaxHP;
     }
 
     public void UpdateManaBar(SkillCaster _caster)
@@ -62,21 +61,21 @@ public class ScreenUI : Singleton<ScreenUI>
     public bool IsMouseEscapeUI()
     {
         List<RaycastResult> results = new List<RaycastResult>();
-        PointerEventData m_PointerEventData = new PointerEventData(m_EventSystem) { position = Input.mousePosition };
-        m_Raycaster.Raycast(m_PointerEventData, results);
+        PointerEventData m_PointerEventData = new PointerEventData(_eventSystem) { position = Input.mousePosition };
+        _raycaster.Raycast(m_PointerEventData, results);
 
         return results.Count == 0;
     }
 
     private void Awake()
     {
-        SelectedIcon.sprite = DefaultIcon;
+        _selectedIcon.sprite = _defaultIcon;
     }
 
     private void Start()
     {
-        _backpackPainter = new BackpackPainter(ItemsPanel, ItemSlotPrefab);
-        _skillPainter = new SkillPainter(SkillPrefab, Pool, SkillsPanel, ManaBar);
+        _backpackPainter = new BackpackPainter(_itemsPanel, _itemSlotPrefab);
+        _skillPainter = new SkillPainter(_skillPrefab, _pool, _skillsPanel, _manaBar);
     }
 
     private void OnEnable()
@@ -120,7 +119,7 @@ public class ScreenUI : Singleton<ScreenUI>
     private void DropTarget()
     {
         _selectedUnit = null;
-        SelectedIcon.sprite = DefaultIcon;
+        _selectedIcon.sprite = _defaultIcon;
         _backpackPainter.HideBackpack();
         _skillPainter.DropTarget();
         ResetHealthBarToZero();
@@ -128,6 +127,6 @@ public class ScreenUI : Singleton<ScreenUI>
 
     private void ResetHealthBarToZero()
     {
-        HealthBar.fillAmount = 0;
+        _healthBar.fillAmount = 0;
     }
 }

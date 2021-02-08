@@ -5,8 +5,15 @@ using UnityEngine.UI;
 [System.Serializable]
 public class WorldUIContainer
 {
-    public Transform TargetTransform;
-    [HideInInspector] public Transform ContainerTransform;
-    [HideInInspector] public Transform Highlighter;
-    [HideInInspector] public Image HealthBar;
+    public Transform ContainerTransform;
+    public Transform Highlighter;
+    public Image HealthBar;
+    public Transform TargetTransform { get => _targetTransform; }
+
+    private Transform _targetTransform;
+
+    public WorldUIContainer(Transform _initTargetTransform)
+    {
+        _targetTransform = _initTargetTransform;
+    }
 }

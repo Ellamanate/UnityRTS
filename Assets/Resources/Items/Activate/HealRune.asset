@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78249b2e1ae98a24cb62df1d26e3e1b1, type: 3}
   m_Name: HealRune
   m_EditorClassIdentifier: 
-  Owner: {fileID: 0}
-  HealValue: 10
+  _icon: {fileID: 21300000, guid: 5d9ba4e7d0964044ea54abe409d81dfd, type: 3}
+  _healValue: 10

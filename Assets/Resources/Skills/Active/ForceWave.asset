@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffbd67ca42a12304584f0565fcca478b, type: 3}
   m_Name: ForceWave
   m_EditorClassIdentifier: 
-  CoolDown: 2
-  SelectingTarget: 1
-  CanActivate: 1
-  ManaCost: 10
-  Damage: 10
-  Force: 15
-  Wave: {fileID: 2875000888491619106, guid: 0c986435df0d8a448ba19e47dedb611a, type: 3}
+  _coolDown: 2
+  _manaCost: 10
+  _damageValue: 10
+  _force: 15
+  _wave: {fileID: 2875000888491619106, guid: 0c986435df0d8a448ba19e47dedb611a, type: 3}

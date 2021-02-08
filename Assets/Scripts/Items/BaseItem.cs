@@ -6,7 +6,9 @@ using System.Collections.Generic;
 
 public abstract class BaseItem : ScriptableObject
 {
-    public Sprite Icon;
+    public Sprite Icon { get => _icon; }
+
+    [SerializeField] private Sprite _icon;
 
     public virtual void Collect(Unit _owner, ItemPrefab _prefab) 
     {

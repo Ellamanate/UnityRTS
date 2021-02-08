@@ -4,17 +4,20 @@ using UnityEditor;
 
 public class Clap : ActiveSkill
 {
-    public int Damage;
-    public ClapPrefab ClapPrefab;
+    public int DamageValue { get => _damageValue; }
+    public ClapPrefab ClapPrefab { get => _clapPrefab; }
 
-    public Clap() { SkillTargetSelector = new SelectNobody(this); }
+    [SerializeField] private int _damageValue;
+    [SerializeField] private ClapPrefab _clapPrefab;
 
-    public override void Effect(SkillCaster _caster, SkillTarget _target)
+    public Clap() : base(new SelectNobody()) { }
+
+    public override void Effect(SkillCaster _caster, object _target)
     {
-        if (_target.TargetPoint != null)
+        if (TypeChecker<Vector3>.CheckObject(_target, out Vector3 _vector))
         {
-            ClapPrefab _clap = GameObject.Instantiate(ClapPrefab, _caster.transform.position, new Quaternion(0, 0, 0, 0));
-            _clap.Init(Damage);
+            ClapPrefab _clap = GameObject.Instantiate(_clapPrefab, _vector, new Quaternion(0, 0, 0, 0));
+            _clap.Init(_damageValue);
         }
     }
 

@@ -6,18 +6,18 @@ public abstract class GameEntity : MonoBehaviour, IDamageable, ISelectable
 {
     public virtual int MaxHP { get => _maxHP; set { _maxHP = OnChangeMaxHP(value); Events.OnDamageableHPChange.Publish(this); WhenChangeHP(); } }
     public virtual int CurrentHP { get => _currentHP; set { _currentHP = OnChangeCurrentHP(value); Events.OnDamageableHPChange.Publish(this); WhenChangeHP(); } }
-    public Armor ArmorType { get => _armorType; set => _armorType = value; }
+    public ArmorType ArmorType { get => _armorType; set => _armorType = value; }
     public Collider HitBox { get => _hitBox; }
     public GameObject GameObject { get => _gameObject; }
     public WorldUIContainer WorldUIContainer { get => _worldUIContainer; }
     public virtual Sprite Icon { get => _icon; set => _icon = value; }
 
-    [SerializeField] private Armor _armorType;
+    [SerializeField] private ArmorType _armorType;
     [SerializeField] private Collider _hitBox;
     [SerializeField] private Sprite _icon;
     [SerializeField] private int _maxHP;
     [SerializeField] private int _currentHP;
-    [SerializeField] private WorldUIContainer _worldUIContainer;
+    private WorldUIContainer _worldUIContainer;
     private GameObject _gameObject;
 
     public void ApplyDamage(DamageType _damageType, int _applyedDamage)
@@ -46,6 +46,7 @@ public abstract class GameEntity : MonoBehaviour, IDamageable, ISelectable
 
     private void OnEnable()
     {
+        _worldUIContainer = new WorldUIContainer(transform);
         _gameObject = gameObject;
         WorldUI.Instance.RegistrUnit(WorldUIContainer);
         WhenEnable();

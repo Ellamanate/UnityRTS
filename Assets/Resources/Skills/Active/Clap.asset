@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15a6e74937f33b94996bfe34997c72b9, type: 3}
   m_Name: Clap
   m_EditorClassIdentifier: 
-  CoolDown: 2
-  SelectingTarget: 0
-  CanActivate: 1
-  ManaCost: 10
-  Damage: 10
-  ClapPrefab: {fileID: -2733940848930379511, guid: fdbd06e5cfd3cbf4286300a9c4bf2c09,
+  _coolDown: 2
+  _manaCost: 10
+  _damageValue: 10
+  _clapPrefab: {fileID: -2733940848930379511, guid: fdbd06e5cfd3cbf4286300a9c4bf2c09,
     type: 3}

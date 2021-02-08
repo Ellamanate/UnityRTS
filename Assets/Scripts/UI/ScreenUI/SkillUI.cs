@@ -1,29 +1,38 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Linq;
 
 
 public class SkillUI : MonoBehaviour, IPointerClickHandler
 {
-    public Image Icon;
-    public Text Counter;
-    [HideInInspector] public SkillData SkillData;
-    [HideInInspector] public SkillManager SkillManager;
+    public SkillManager SkillManager { get => _skillManager; }
+    public SkillData SkillData { get => _skillData; }
+
+    [SerializeField] private Text _counter;
+    private SkillData _skillData;
+    private SkillManager _skillManager;
 
     public void UpdateCounter()
     {
-        if (SkillData != null & this != null)
+        if (_skillData != null & this != null)
         {
-            if (SkillData.Timer == 0)
-                Counter.text = "";
+            if (_skillData.Timer == 0)
+                _counter.text = "";
             else
-                Counter.text = (Mathf.Round(SkillData.Timer) / 10).ToString();
+                _counter.text = (Mathf.Round(_skillData.Timer) / 10).ToString();
         }
+    }
+
+    public void SetSkillManager(SkillManager _newSkillManager, int _index)
+    {
+        _skillManager = _newSkillManager;
+        _skillData = _skillManager.Caster.Skills.ElementAt(_index);
+        UpdateCounter();
     }
 
     public void OnPointerClick(PointerEventData _pointerEventData)
     {
-        SkillManager.TryCastSkill(SkillData);
+        _skillManager.TryCastSkill(_skillData);
     }
 }

@@ -12,7 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a16227976bc29144b960692c91881d9c, type: 3}
   m_Name: Regeneration
   m_EditorClassIdentifier: 
-  CoolDown: 1
-  SelectingTarget: 0
-  CanActivate: 0
-  HealValue: 1
+  _coolDown: 1
+  _healValue: 1

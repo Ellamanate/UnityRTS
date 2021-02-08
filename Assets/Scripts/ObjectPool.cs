@@ -4,28 +4,33 @@ using UnityEngine;
 
 public class ObjectPool
 {
-    public Transform Pool;
-    public GameObject Prefab;
-    public List<Transform> Objects = new List<Transform>();
+    public Transform Pool { get => _pool; }
+    public GameObject Prefab { get => _prefab; }
+    public IReadOnlyCollection<Transform> Objects { get => _objectsPool.AsReadOnly(); }
 
-    public ObjectPool(GameObject _prefab, Transform _pool)
+    private Transform _pool;
+    private GameObject _prefab;
+    private List<Transform> _objectsPool = new List<Transform>();
+
+    public ObjectPool(GameObject _initPrefab, Transform _initPool)
     {
-        Prefab = _prefab;
-        Pool = _pool;
+        _prefab = _initPrefab;
+        _pool = _initPool;
     }
 
     public Transform[] GetObjects(int _count)
     {
-        if (Objects.Count < _count)
-            CreateObjects(_count - Objects.Count);
+        if (_objectsPool.Count < _count)
+            CreateObjects(_count - _objectsPool.Count);
 
         Transform[] _objects = new Transform[_count];
-        for (int i = 0; i < Objects.Count; i++)
+
+        for (int i = 0; i < _objectsPool.Count; i++)
         {
             if (i < _objects.Length)
-                _objects[i] = Objects[i];
+                _objects[i] = _objectsPool[i];
             else
-                Objects[i].SetParent(Pool);
+                _objects[i].SetParent(Pool);
         }
 
         return _objects;
@@ -33,14 +38,14 @@ public class ObjectPool
 
     public void BackToPool(Transform _target)
     {
-        if (Objects.Contains(_target))
+        if (_objectsPool.Contains(_target))
             _target.SetParent(Pool);
     }
 
     public void BackToPoolAll()
     {
-        for (int i = 0; i < Objects.Count; i++)
-            Objects[i].SetParent(Pool);
+        for (int i = 0; i < _objectsPool.Count; i++)
+            _objectsPool[i].SetParent(Pool);
     }
 
     private void CreateObjects(int _count)
@@ -48,7 +53,7 @@ public class ObjectPool
         for (int i = 0; i < _count; i++)
         {
             GameObject _newObject = GameObject.Instantiate(Prefab, Pool);
-            Objects.Add(_newObject.transform);
+            _objectsPool.Add(_newObject.transform);
         }
     }
 }

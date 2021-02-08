@@ -12,6 +12,14 @@ public static class TypeChecker<T>
         return _type != null;
     }
 
+    public static bool CheckObject(object _object, out T _type)
+    {
+        try { _type = (T)_object; }
+        catch { _type = default; }
+
+        return _type != null;
+    }
+
     public static bool CheckGameObject(GameObject _object, out T _type)
     {
         _type = _object.GetComponent<T>();

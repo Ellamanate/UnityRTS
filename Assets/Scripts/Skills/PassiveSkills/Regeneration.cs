@@ -5,7 +5,9 @@ using System.Collections;
 
 public class Regeneration : PassiveSkill
 {
-    public int HealValue;
+    public int HealValue { get => _healValue; }
+
+    [SerializeField] private int _healValue;
 
     public override void OnStart(SkillCaster _caster)
     {
@@ -20,7 +22,7 @@ public class Regeneration : PassiveSkill
         while (_caster != null)
         {
             if (TypeChecker<Unit>.CheckGameObject(_caster.gameObject, out Unit _unit))
-                _unit.CurrentHP += HealValue;
+                _unit.CurrentHP += _healValue;
 
             yield return new WaitForSeconds(CoolDown);
         }

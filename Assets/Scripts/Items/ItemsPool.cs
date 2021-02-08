@@ -4,18 +4,22 @@ using System.Collections.Generic;
 
 public class ItemsPool : Singleton<ItemsPool>
 {
-    [HideInInspector] public List<ItemPrefab> Items = new List<ItemPrefab>();
-    public Transform PoolTransform;
-    public int DefaultBackpackSize;
+    public int DefaultBackpackSize { get => _defaultBackpackSize; }
+    public Transform PoolTransform { get => _poolTransform; }
+    public IReadOnlyCollection<ItemPrefab> Items { get => _items.AsReadOnly(); }
+
+    [SerializeField] private int _defaultBackpackSize;
+    [SerializeField] private Transform _poolTransform;
+    private List<ItemPrefab> _items = new List<ItemPrefab>();
 
     public void AddItem(ItemPrefab _item)
     {
-        Items.Add(_item);
+        _items.Add(_item);
     }
 
     public void RemoveItem(ItemPrefab _item)
     {
-        Items.Remove(_item);
+        _items.Remove(_item);
     }
 
     public void BackToPool(ItemPrefab _item)

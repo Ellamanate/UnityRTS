@@ -1,11 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-public class PassiveSkill : ProtoSkill
+public abstract class PassiveSkill : ProtoSkill
 {
-    public PassiveSkill() 
-    { 
-        SkillTargetSelector = new SelectNobody(this);
-        CanActivate = false;
-    }
+    public PassiveSkill() : base(new SelectNobody(), false) { }
 }

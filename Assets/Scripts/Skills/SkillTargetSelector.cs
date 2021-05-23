@@ -1,53 +1,53 @@
 ﻿using UnityEngine;
 
 
-public abstract class SkillTargetSelector
+namespace Skills
 {
-    public virtual bool IsSelectingTarget() { return false; }
-    public virtual void SelectTarget(SkillManager _skillManager) { }
-}
-
-public class SelectNobody : SkillTargetSelector
-{
-    public override bool IsSelectingTarget() { return false; }
-
-    public override void SelectTarget(SkillManager _skillManager)
+    public abstract class SkillTargetSelector
     {
-        _skillManager.SkillTarget = _skillManager.Caster.transform.position;
-        _skillManager.CastSkill();
+        public virtual bool IsSelectingTarget() => false;
+        public virtual void SelectTarget(SkillManager skillCaster) { }
     }
-}
 
-public class SelectBody : SkillTargetSelector
-{
-    public override bool IsSelectingTarget() { return true; }
-
-    public override void SelectTarget(SkillManager _skillManager)
+    public class SelectNobody : SkillTargetSelector
     {
-        if (Raycaster.Instance.SelectMouseRaycast(out Rigidbody _attachedRigidbody))
-        {
-            _skillManager.SkillTarget = _attachedRigidbody.GetComponent<IDamageable>();
-            _skillManager.CastSkill();
-            return;
-        }
+        public override bool IsSelectingTarget() => false;
 
-        Debug.Log("Не верная цель");
+        public override void SelectTarget(SkillManager skillCaster)
+        {
+            skillCaster.CastSkill(skillCaster.transform.position);
+        }
     }
-}
 
-public class SelectVector : SkillTargetSelector
-{
-    public override bool IsSelectingTarget() { return true; }
-
-    public override void SelectTarget(SkillManager _skillManager)
+    public class SelectBody : SkillTargetSelector
     {
-        if (Raycaster.Instance.DefaultMouseRaycast(out RaycastHit _hitInfo))
-        {
-            _skillManager.SkillTarget = _hitInfo.point;
-            _skillManager.CastSkill();
-            return;
-        }
+        public override bool IsSelectingTarget() => true;
 
-        Debug.Log("Не верная цель");
+        public override void SelectTarget(SkillManager skillCaster)
+        {
+            if (Raycaster.Instance.SelectMouseRaycast(out Rigidbody _attachedRigidbody))
+            {
+                skillCaster.CastSkill(_attachedRigidbody.GetComponent<IDamageable>());
+                return;
+            }
+
+            Debug.Log("Не верная цель");
+        }
+    }
+
+    public class SelectVector : SkillTargetSelector
+    {
+        public override bool IsSelectingTarget() => true;
+
+        public override void SelectTarget(SkillManager skillCaster)
+        {
+            if (Raycaster.Instance.DefaultMouseRaycast(out RaycastHit _hitInfo))
+            {
+                skillCaster.CastSkill(_hitInfo.point);
+                return;
+            }
+
+            Debug.Log("Не верная цель");
+        }
     }
 }

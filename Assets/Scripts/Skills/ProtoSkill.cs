@@ -3,41 +3,46 @@ using UnityEditor;
 using System;
 
 
-public abstract class ProtoSkill : ScriptableObject
+namespace Skills
 {
-    public int CoolDown { get => _coolDown; set => _coolDown = OnCoolDownChange(value); }
-    public bool SelectingTarget { get => _selectingTarget; }
-    public bool CanActivate { get => _canActivate; }
-    public SkillTargetSelector SkillTargetSelector { get => _skillTargetSelector; }
-
-    [SerializeField] private int _coolDown;
-    private bool _selectingTarget;
-    private bool _canActivate;
-    private SkillTargetSelector _skillTargetSelector;
-
-    public ProtoSkill(SkillTargetSelector _initSkillTargetSelector, bool _initCanActivate)
+    public abstract class ProtoSkill : ScriptableObject
     {
-        _canActivate = _initCanActivate;
-        _skillTargetSelector = _initSkillTargetSelector;
-        _selectingTarget = _skillTargetSelector.IsSelectingTarget();
+        [SerializeField] private Sprite _sprite;
+        [SerializeField] private int _coolDown;
+        private bool _selectingTarget;
+        private bool _canActivate;
+        private SkillTargetSelector _skillTargetSelector;
+
+        public int CoolDown { get => _coolDown; set => _coolDown = OnCoolDownChange(value); }
+        public bool SelectingTarget => _selectingTarget;
+        public bool CanActivate => _canActivate;
+        public SkillTargetSelector SkillTargetSelector => _skillTargetSelector;
+        public Sprite Sprite => _sprite;
+
+        public ProtoSkill(SkillTargetSelector skillTargetSelector, bool canActivate)
+        {
+            _canActivate = canActivate;
+            _skillTargetSelector = skillTargetSelector;
+            _selectingTarget = _skillTargetSelector.IsSelectingTarget();
+        }
+
+        public virtual void OnStart(SkillManager caster) { }
+
+        public virtual void Activate(SkillManager caster, object target) { }
+
+        protected static void SaveInstance(ScriptableObject obj, string name)
+        {
+            string _uniqueFileName = AssetDatabase.GenerateUniqueAssetPath("Assets/Resources/Skills/" + name + ".asset");
+            AssetDatabase.CreateAsset(obj, _uniqueFileName);
+            AssetDatabase.Refresh();
+        }
+
+        private int OnCoolDownChange(int value)
+        {
+            if (value < 0)
+                new Exception("Trying set CoolDown < 0");
+
+            return value;
+        }
     }
-
-    public virtual void OnStart(SkillCaster _caster) { }
-
-    public virtual void Activate(SkillCaster _caster, object _target) { }
-
-    protected static void SaveInstance(ScriptableObject _obj, string _name) 
-    {
-        string _uniqueFileName = AssetDatabase.GenerateUniqueAssetPath("Assets/Resources/Skills/" + _name + ".asset");
-        AssetDatabase.CreateAsset(_obj, _uniqueFileName);
-        AssetDatabase.Refresh();
-    }
-
-    private int OnCoolDownChange(int _value)
-    {
-        if (_value < 0)
-            new Exception("Trying set CoolDown < 0");
-
-        return _value;
-    }   
 }

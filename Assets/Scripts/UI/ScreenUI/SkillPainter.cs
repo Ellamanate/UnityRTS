@@ -1,42 +1,48 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using System.Linq;
+using Skills;
 
 
 public class SkillPainter 
 {
-    private ObjectPool _skillsUIPool;
+    private ObjectPool<SkillUI> _skillsUIPool;
     private List<SkillUI> _skills = new List<SkillUI>();
-    private SkillManager _currentSkillManager;
+    private SkillManager _currentSkillCaster;
     private RectTransform _skillsPanel;
     private Image _manaBar;
 
-    public SkillPainter(SkillUI _skillPrefab, RectTransform _pool, RectTransform _panel, Image _mana)
+    public SkillPainter(SkillUI skillPrefab, RectTransform pool, RectTransform skillPanel, Image manaBar)
     {
-        _skillsUIPool = new ObjectPool(_skillPrefab.gameObject, _pool);
-        _skillsPanel = _panel;
-        _manaBar = _mana;
+        _skillsUIPool = new ObjectPool<SkillUI>(skillPrefab, pool);
+        _skillsPanel = skillPanel;
+        _manaBar = manaBar;
     }
 
-    public void PaintSkills(Unit _selectedUnit)
+    public void PaintSkills(Unit selectedUnit)
     {
-        if (_selectedUnit != null)
+        if (selectedUnit != null)
         {
-            if (_selectedUnit.GetComponent<SkillCaster>() != null)
+            if (TypeChecker<SkillManager>.CheckGameObject(selectedUnit.gameObject, out SkillManager caster))
             {
-                SkillManager _skillManager = _selectedUnit.GetComponent<SkillCaster>().SkillManager;
-                Transform[] _skillParents = _skillsUIPool.GetObjects(_skillManager.Caster.Skills.Count);
+                SkillUI[] skillParents = _skillsUIPool.GetObjects(caster.GetSkillsCount());
                 _skills.Clear();
 
-                for (int i = 0; i < _skillParents.Length; i++)
+                for (int i = 0; i < skillParents.Length; i++)
                 {
-                    _skillParents[i].SetParent(_skillsPanel);
-                    _skills.Add(_skillParents[i].GetComponent<SkillUI>());
+                    skillParents[i].transform.SetParent(_skillsPanel);
+                    skillParents[i].SetSkillManager(caster, i);
+                    _skills.Add(skillParents[i]);
                 }
 
-                UpdateSkillsCoolDown(_skillManager);
-                UpdateManaBar(_selectedUnit.GetComponent<SkillCaster>());
+                if (caster != _currentSkillCaster)
+                {
+                    TickUnsubscribes();
+                    TickSubscribes(caster);
+                    _currentSkillCaster = caster;
+                }
+
+                UpdateManaBar(caster);
             }
             else
             {
@@ -52,35 +58,31 @@ public class SkillPainter
     {
         _skills.Clear();
         _skillsUIPool.BackToPoolAll();
-        _currentSkillManager = null;
-        UpdateSkillsCoolDown(_currentSkillManager);
+        TickUnsubscribes();
         ResetManaBarToZero();
+
+        _currentSkillCaster = null;
     }
 
-    public void UpdateSkillsCoolDown(SkillManager _skillManager)
+    private void TickSubscribes(SkillManager caster)
     {
-        if (_skillManager != _currentSkillManager)
+        if (caster != null)
         {
             for (int i = 0; i < _skills.Count; i++)
-                _skillManager.Caster.Skills.ElementAt(i).Tick -= _skills[i].UpdateCounter;
-
-            _currentSkillManager = _skillManager;
-
-            for (int i = 0; i < _skills.Count; i++)
-            {
-                _skills[i].SetSkillManager(_skillManager, i);
-                _skillManager.Caster.Skills.ElementAt(i).Tick += _skills[i].UpdateCounter;
-            }
+                caster.GetSkillByIndex(i).Tick += _skills[i].UpdateCounter;
         }
     }
 
-    public void UpdateManaBar(SkillCaster _unit)
+    private void TickUnsubscribes()
     {
-        _manaBar.fillAmount = (float)_unit.CurrentMP / (float)_unit.MaxMP;
+        if (_currentSkillCaster != null)
+        {
+            for (int i = 0; i < _skills.Count; i++)
+                _currentSkillCaster.GetSkillByIndex(i).Tick -= _skills[i].UpdateCounter;
+        }
     }
 
-    private void ResetManaBarToZero()
-    {
-        _manaBar.fillAmount = 0;
-    }
+    public void UpdateManaBar(SkillManager caster) => _manaBar.fillAmount = (float)caster.CurrentMP / (float)caster.MaxMP;
+
+    private void ResetManaBarToZero() => _manaBar.fillAmount = 0;
 }

@@ -1,53 +1,163 @@
-﻿using UnityEngine;
-using System.Linq;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 
-public abstract class Order 
+namespace UnitManagement
 {
-    public virtual void PointSelected(Character _character, Vector3 _point) { }
-    public virtual void ItemSelected(Character _character, ItemPrefab _item, out bool _isBreak) { _isBreak = false; }
-    public virtual void CharacterSelected(Character _character, IDamageable _damageable) { }
+    public class DefaultOrder
+    {
+        public void Command() 
+        {
+            IReadOnlyList<ISelectable> selectedUnits = UnitSelector.Instance.SelectedUnits;
+
+            if (Raycaster.Instance.OrderMouseRaycast(out RaycastHit hitInfo, out Rigidbody attachedRigidbody))
+            {
+                if (attachedRigidbody == null)
+                {
+                    if (selectedUnits.Count == 1)
+                    {
+                        SelectVector(selectedUnits[0], hitInfo.point);
+                    }
+                    else
+                    {
+                        SelectVectorGroup(selectedUnits, hitInfo.point, selectedUnits.Count);
+                    }
+                }
+                else
+                {
+                    if (TypeChecker<ItemPrefab>.CheckGameObject(attachedRigidbody.gameObject, out ItemPrefab itemPrefab))
+                    {
+                        SelectItem(selectedUnits[0], itemPrefab);
+                    }
+                    else if (TypeChecker<IDamageable>.CheckGameObject(attachedRigidbody.gameObject, out IDamageable damageable))
+                    {
+                        SelectDamageable(selectedUnits, damageable);
+                    }
+                }
+            }
+        }
+
+        protected virtual void SelectVector(ISelectable selectable, Vector3 point)
+        {
+            if (TypeChecker<IManageable>.CheckGameObject(selectable.GameObject, out IManageable manageable))
+                manageable.Move(point);
+        }
+
+        protected virtual void SelectVectorGroup(IReadOnlyList<ISelectable> selectedUnits, Vector3 point, int selectedCount)
+        {
+            Vector3[] points = point.CalculateGroupPoints(2, selectedCount);
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                if (TypeChecker<IManageable>.CheckGameObject(selectedUnits[i].GameObject, out IManageable manageable))
+                    manageable.Move(points[i]);
+            }
+        }
+
+        protected virtual void SelectDamageable(IReadOnlyList<ISelectable> selectedUnits, IDamageable damageable)
+        {
+            for (int i = 0; i < selectedUnits.Count; i++)
+            {
+                if (TypeChecker<IManageable>.CheckGameObject(selectedUnits[i].GameObject, out IManageable manageable))
+                    manageable.Move(damageable);
+            }
+        }
+
+        protected virtual void SelectItem(ISelectable selectable, ItemPrefab item)
+        {
+            if (TypeChecker<IManageable>.CheckGameObject(selectable.GameObject, out IManageable manageable))
+                manageable.Collect(item);
+        }
+    }
+
+    public class Attack : DefaultOrder
+    {
+        public Attack()
+        {
+
+        }
+
+        protected override void SelectVector(ISelectable selectable, Vector3 point) 
+        {
+            if (TypeChecker<IManageable>.CheckGameObject(selectable.GameObject, out IManageable manageable))
+                manageable.Attack(point);
+        }
+
+        protected override void SelectVectorGroup(IReadOnlyList<ISelectable> selectedUnits, Vector3 point, int selectedCount)
+        {
+            Vector3[] points = point.CalculateGroupPoints(2, selectedCount);
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                if (TypeChecker<IManageable>.CheckGameObject(selectedUnits[i].GameObject, out IManageable manageable))
+                    manageable.Attack(points[i]);
+            }
+        }
+
+        protected override void SelectDamageable(IReadOnlyList<ISelectable> selectedUnits, IDamageable damageable)
+        {
+            for (int i = 0; i < selectedUnits.Count; i++)
+            {
+                if (TypeChecker<IManageable>.CheckGameObject(selectedUnits[i].GameObject, out IManageable manageable))
+                    manageable.Attack(damageable);
+            }
+        }
+
+        protected override void SelectItem(ISelectable selectable, ItemPrefab item)
+        {
+            if (TypeChecker<IManageable>.CheckGameObject(selectable.GameObject, out IManageable manageable))
+                manageable.Attack(item);
+        }
+    }
+
+    public class Collect : DefaultOrder
+    {
+        public Collect()
+        {
+
+        }
+
+        protected override void SelectVector(ISelectable selectable, Vector3 point)
+        {
+            Debug.Log("Не верная цель");
+        }
+
+        protected override void SelectVectorGroup(IReadOnlyList<ISelectable> selectedUnits, Vector3 point, int selectedCount)
+        {
+            Debug.Log("Не верная цель");
+        }
+
+        protected override void SelectDamageable(IReadOnlyList<ISelectable> selectedUnits, IDamageable damageable)
+        {
+            Debug.Log("Не верная цель");
+        }
+    }
+
+    public class Stop : DefaultOrder
+    {
+        public Stop()
+        {
+            IReadOnlyList<ISelectable> selectedUnits = UnitSelector.Instance.SelectedUnits;
+
+            for (int i = 0; i < selectedUnits.Count; i++)
+            {
+                if (TypeChecker<IManageable>.CheckGameObject(selectedUnits[i].GameObject, out IManageable manageable))
+                    manageable.Stop();
+            }
+        }
+    }
+
+    public class HoldPosition : DefaultOrder
+    {
+        public HoldPosition()
+        {
+            IReadOnlyList<ISelectable> selectedUnits = UnitSelector.Instance.SelectedUnits;
+
+            for (int i = 0; i < selectedUnits.Count; i++)
+            {
+                if (TypeChecker<IManageable>.CheckGameObject(selectedUnits[i].GameObject, out IManageable manageable))
+                    manageable.HoldPosition();
+            }
+        }
+    }
 }
-
-public class DefaultOrder : Order
-{
-    public override void PointSelected(Character _character, Vector3 _point) 
-    {
-         _character.MoveOrder(_point);
-    }
-
-    public override void ItemSelected(Character _character, ItemPrefab _item, out bool _isBreak)
-    {
-        _isBreak = true;
-        _item.Collect(_character);
-    }
-
-    public override void CharacterSelected(Character _character, IDamageable _damageable)
-    {
-        if (AllianceSystem.Instance.GetEnemyTags(GameManager.Instance.PlayersTag).Contains(_damageable.GameObject.tag))
-            _character.Attack(_damageable);
-        else
-            _character.MoveToDamageable(_damageable);
-    }
-}
-
-public class AttackOrder : Order
-{
-    public override void PointSelected(Character _character, Vector3 _point)
-    {
-        _character.AttackMove(_point);
-    }
-
-    public override void ItemSelected(Character _character, ItemPrefab _item, out bool _isBreak) 
-    {
-        _isBreak = false;
-        _character.Attack(_item);
-    }
-
-    public override void CharacterSelected(Character _character, IDamageable _damageable)
-    {
-        _character.Attack(_damageable);
-    }
-}
-
-

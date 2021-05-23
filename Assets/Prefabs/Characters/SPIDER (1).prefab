@@ -419,14 +419,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 518a32bfa6aa79145922de1e18e0bf6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 6
-  Controller: {fileID: 1485491453298800242}
-  NavMeshAgent: {fileID: 1485491453298800243}
-  NavMeshObstacle: {fileID: 1485491453298800244}
+  _speed: 0
+  _angularSpeed: 2000
+  _stoppingDistance: 0.1
+  _controller: {fileID: 0}
+  _navMeshAgent: {fileID: 0}
+  _navMeshObstacle: {fileID: 0}
   _patrolPoints: []
-  AvoidanceVector: {x: 0, y: 0, z: 0}
-  _targetPos: {x: 0, y: 0, z: 0}
   _block: 0
+  _isMove: 0
+  _isCalculatingPath: 0
 --- !u!1 &1485491452770666432
 GameObject:
   m_ObjectHideFlags: 0
@@ -789,12 +791,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b2c69ef81891e24085a5b83bcf24d22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FindEnemy: {fileID: 1485491454047018194}
-  Damage: 5
-  _enemysInAttackRange: []
-  _targetDamagable: {fileID: 0}
-  _target: {fileID: 0}
+  _enemysInRange: []
+  _nearestEnemyFinder: {fileID: 0}
+  _damageType: {fileID: 0}
+  _damage: 0
   _targetCollision: 0
+  _isTargetSearching: 1
 --- !u!1 &1485491453198123712
 GameObject:
   m_ObjectHideFlags: 0
@@ -1043,24 +1045,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65dc8b0ed7121504ead9e3b169ec0dae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Armor: 0
-  HitBox: {fileID: 1485491453726286871}
-  HealthBarStartPos: {x: 0, y: 4, z: 0}
-  UnitUI:
-    TargetTransform: {fileID: 1485491453298800245}
-    Icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-    UIContainer: {fileID: 0}
-    Highlighter: {fileID: 0}
-    HealthBar: {fileID: 0}
+  _armorType: {fileID: 0}
+  _hitBox: {fileID: 0}
+  _icon: {fileID: 0}
   _maxHP: 25
   _currentHP: 10
-  _maxMP: 0
-  _currentMP: 0
-  CharacterAnimator: {fileID: 1485491453298800206}
-  CharacterAttack: {fileID: 1485491453162911200}
-  CharacterMove: {fileID: 1485491452705278723}
-  RotationSpeed: 5
-  Skills: []
+  _healthBarStartPos: {x: 0, y: 0, z: 0}
+  _characterAnimator: {fileID: 0}
+  _characterAttack: {fileID: 0}
+  _characterMove: {fileID: 0}
+  _rotationSpeedWhenAttack: 4
+  _dropAntimationTime: 1
+  _isMoveOrder: 0
+  _goToNextPoint: 0
+  _nextPoint: {x: 0, y: 0, z: 0}
 --- !u!114 &1485491453298800206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1073,7 +1071,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1b89e378adf3a4c95630a5423c549c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Animator: {fileID: 1485491453298800207}
+  animator: {fileID: 1485491453298800207}
+  _attackAnimation: 0
+  _movingAnimation: 0
+  _deadAnimation: 0
 --- !u!95 &1485491453298800207
 Animator:
   serializedVersion: 3
@@ -1789,8 +1790,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f9674258079039419e1282b92509afc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Enemys: []
-  EnemyTags: []
+  _enemysInRange: []
 --- !u!1 &1485491454064993468
 GameObject:
   m_ObjectHideFlags: 0

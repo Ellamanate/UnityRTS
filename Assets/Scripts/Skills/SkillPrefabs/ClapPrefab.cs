@@ -2,20 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ClapPrefab : MonoBehaviour
+namespace Skills
 {
-    [SerializeField] private Rigidbody Rigidbody;
-    [SerializeField] private DamageType _damageType;
-    private int _damage;
-
-    public void Init(int _damageValue)
+    public class ClapPrefab : MonoBehaviour
     {
-        _damage = _damageValue;
-    }
+        [SerializeField] private Rigidbody Rigidbody;
+        [SerializeField] private DamageType _damageType;
+        private int _damage;
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!other.CompareTag(GameManager.Instance.PlayersTag))
-            other.attachedRigidbody.GetComponent<IDamageable>().ApplyDamage(_damageType, _damage);
+        public void Init(int damage)
+        {
+            _damage = damage;
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!other.CompareTag(GameManager.Instance.PlayersTag))
+                other.attachedRigidbody.GetComponent<IDamageable>().ApplyDamage(_damageType, _damage);
+        }
     }
 }

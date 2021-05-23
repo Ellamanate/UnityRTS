@@ -1,6 +1,6 @@
 ﻿using System.Collections;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
 
 public class Character : Unit
@@ -14,45 +14,29 @@ public class Character : Unit
     [SerializeField] private bool _goToNextPoint = false;
     [SerializeField] private Vector3 _nextPoint;
     private IEnumerator _chase;
+    private const float _chaseTimer = 0.25f;
 
-    public void Attack(IDamageable _target)
+    public override void Move(IDamageable damageable)
     {
-        _characterAttack.AttackOrder(_target, out bool _collision);
-
-        if (!_collision)
-            MoveToDamageable(_target);
+        if (AllianceSystem.Instance.GetEnemyTags(tag).Contains(damageable.GameObject.tag))
+            Attack(damageable);
+        else
+            MoveToDamageable(damageable);
     }
 
-    public void MoveToDamageable(IDamageable _damageable)
-    {
-        if (_damageable == GetComponent<IDamageable>())
-            _characterMove.Block = true;
-        else if (!_characterAttack.DamageablesInRange.Contains(_damageable) | _characterMove.IsMove)
-            MoveToPoint(GetOffset(_damageable.GameObject.transform.position));
-    }
+    public override void Move(Vector3 point) => MoveOrder(point);
+    public override void Attack(IDamageable damageable) => AttackTarget(damageable);
+    public override void Attack(Vector3 point) => AttackMove(point);
+    public override void Collect(ItemPrefab item) => item.Collect(this);
 
-    public void MoveOrder(Vector3 _point)
+    public override void Stop() 
     {
         _characterAttack.DropTarget();
-        MoveToPoint(_point);
+        _characterMove.ResetPath();
+        PathComplete();
     }
 
-    public void AttackMove(Vector3 _point)
-    {
-        if (_nextPoint != _point)
-            _nextPoint = _point;
-
-        if (_goToNextPoint != true)
-            _goToNextPoint = true;
-
-        if (!_characterAttack.TargetCollision)
-        {
-            _characterAttack.AllowSetTarget();
-            _isMoveOrder = false;
-            MoveState();
-            _characterMove.MoveToPoint(_point);
-        }
-    }
+    public override void HoldPosition() => MoveToDamageable(this);
 
     public void AttackAnimationEnd()
     {
@@ -91,36 +75,75 @@ public class Character : Unit
         StopAllCoroutines();
     }
 
-    public void AddDamage(int _damage)
+    public void AddDamage(int damage)
     {
-        _characterAttack.Damage += _damage;
+        _characterAttack.Damage += damage;
     }
 
-    public void RemoveDamage(int _damage)
+    public void RemoveDamage(int damage)
     {
-        _characterAttack.Damage -= _damage;
+        _characterAttack.Damage -= damage;
     }
 
     private void Awake()
     {
-        _chase = ChaseEnemy(0.25f);
+        _chase = ChaseEnemy(_chaseTimer);
     }
 
     private void Update()
     {
         if ((_characterAttack.TargetCollision || _characterAnimator.AttackAnimation) && !_isMoveOrder && _characterAttack.Target != null)
         {
-            Vector3 _difference = (_characterAttack.Target.GameObject.transform.position - transform.position).normalized;
-            _difference.y = 0;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_difference), Time.deltaTime * _rotationSpeedWhenAttack);
+            Vector3 difference = (_characterAttack.Target.GameObject.transform.position - transform.position).normalized;
+            difference.y = 0;
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(difference), Time.deltaTime * _rotationSpeedWhenAttack);
         }
     }
 
-    private void MoveToPoint(Vector3 _point)
+    private void AttackTarget(IDamageable target)
+    {
+        _characterAttack.AttackOrder(target, out bool collision);
+
+        if (!collision)
+            MoveToDamageable(target);
+    }
+
+    private void MoveToDamageable(IDamageable target)
+    {
+        if (target == GetComponent<IDamageable>())
+            _characterMove.Block = true;
+        else if (!_characterAttack.IsDamageableInRange(target) | _characterMove.IsMove)
+            MoveToPoint(GetOffset(target.GameObject.transform.position));
+    }
+
+    private void MoveOrder(Vector3 point)
+    {
+        _characterAttack.DropTarget();
+        MoveToPoint(point);
+    }
+
+    private void AttackMove(Vector3 point)
+    {
+        if (_nextPoint != point)
+            _nextPoint = point;
+
+        if (_goToNextPoint != true)
+            _goToNextPoint = true;
+
+        if (!_characterAttack.TargetCollision)
+        {
+            _characterAttack.AllowSetTarget();
+            _isMoveOrder = false;
+            MoveState();
+            _characterMove.MoveToPoint(point);
+        }
+    }
+
+    private void MoveToPoint(Vector3 point)
     {
         _isMoveOrder = true;
         MoveState();
-        _characterMove.MoveToPoint(_point);
+        _characterMove.MoveToPoint(point);
     }
 
     private void MoveState()
@@ -159,7 +182,7 @@ public class Character : Unit
         _characterAttack.AllowSetTarget();
     }
 
-    private IEnumerator ChaseEnemy(float _delay)
+    private IEnumerator ChaseEnemy(float delay)
     {
         while (true)
         {
@@ -171,12 +194,9 @@ public class Character : Unit
                 _characterMove.MoveToPoint(GetOffset(_characterAttack.Target.GameObject.transform.position));
             }
 
-            yield return new WaitForSeconds(_delay);
+            yield return new WaitForSeconds(delay);
         }
     }
 
-    private Vector3 GetOffset(Vector3 _target)
-    {
-        return _target - (_target - transform.position).normalized * _characterMove.Speed * Time.deltaTime;
-    }
+    private Vector3 GetOffset(Vector3 target) => target - (target - transform.position).normalized * _characterMove.Speed * Time.deltaTime;
 }

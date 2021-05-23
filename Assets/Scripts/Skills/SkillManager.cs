@@ -1,75 +1,59 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using UnityEngine;
 
 
-public class SkillManager
+namespace Skills
 {
-    public object SkillTarget;
-    public SkillCaster Caster { get => _caster; }
-    public SkillData CurrentSkillData { get => _currentSkillData; }
-
-    private SkillCaster _caster;
-    private SkillData _currentSkillData;
-    private SkillTargetSelector _skillTargetSelector;
-
-    public SkillManager(SkillCaster _initCaster, IReadOnlyCollection<SkillData> _skills) 
+    public class SkillManager : MonoBehaviour
     {
-        _caster = _initCaster;
+        [SerializeField] private SkillData[] _skills;
+        [SerializeField] private int _maxMP;
+        [SerializeField] private int _currentMP;
+        private SkillCaster _skillManager;
 
-        for (int i = 0; i < _caster.Skills.Count; i++)
+        public int MaxMP { get => _maxMP; set => OnChangeMaxMP(value); }
+        public int CurrentMP { get => _currentMP; set => OnChangeCurrentMP(value); }
+        public SkillData GetSkillByIndex(int index) => _skills[index];
+        public int GetSkillsCount() => _skills.Length;
+        public void CastSkill(object skillTarget) => _skillManager.CastSkill(this, skillTarget);
+        public void SelectSkillTarget(int skillIndex) => _skillManager.SelectSkillTarget(this, skillIndex);
+        public void SelectSkillTarget(SkillData skillData) => _skillManager.SelectSkillTarget(this, skillData);
+        public void SelectTarget() => _skillManager.SelectTarget(this);
+
+        private void Start()
         {
-            _caster.Skills.ElementAt(i).Ready = true;
-            _caster.Skills.ElementAt(i).Skill.OnStart(Caster);
+            _skillManager = new SkillCaster((SkillData[])_skills.Clone());
+            CurrentMP = MaxMP;
+
+            InitSkills();
         }
-    }
 
-    public void TryCastSkill(int index)
-    {
-        if (_caster.Skills.Count > index)
+        private void OnChangeCurrentMP(int _value)
         {
-            _currentSkillData = _caster.Skills.ElementAt(index);
-            _skillTargetSelector = _currentSkillData.Skill.SkillTargetSelector;
-            TryCastSkill();
-        }
-    }
-
-    public void TryCastSkill(SkillData _skillData)
-    {
-        if (_skillData != null)
-        {
-            _currentSkillData = _skillData;
-            _skillTargetSelector = _currentSkillData.Skill.SkillTargetSelector;
-            TryCastSkill();
-        }
-    }
-
-    public void SelectTarget()
-    {
-        _skillTargetSelector.SelectTarget(this);
-    }
-
-    public void CastSkill()
-    {
-        _currentSkillData.Skill.Activate(Caster, SkillTarget);
-        StartTimer(_currentSkillData.Skill.CoolDown);
-        Events.OnSkillActivate.Publish(this);
-    }
-
-    private void StartTimer(float _time)
-    {
-        IEnumerator _coroutine = _currentSkillData.StartTimer(_time);
-        GameManager.Instance.CreateCoroutine(_coroutine);
-    }
-
-    private void TryCastSkill()
-    {
-        if (_currentSkillData.Ready & _currentSkillData.Skill.CanActivate)
-        {
-            if (_currentSkillData.Skill.SelectingTarget)
-                UnitManager.Instance.SkillTargetSelecting(this);
+            if (_value > _currentMP)
+                _currentMP = _maxMP;
             else
-                SelectTarget();
+                _currentMP = _value;
+
+            Events.OnSkillCasterMPChange.Publish(this);
+        }
+
+        private void OnChangeMaxMP(int _value)
+        {
+            _maxMP = _value;
+
+            if (_currentMP > _value)
+                _currentMP = _value;
+
+            Events.OnSkillCasterMPChange.Publish(this);
+        }
+
+        private void InitSkills()
+        {
+            for (int i = 0; i < _skills.Length; i++)
+            {
+                _skills[i].Ready = true;
+                _skills[i].Skill.OnStart(this);
+            }
         }
     }
 }

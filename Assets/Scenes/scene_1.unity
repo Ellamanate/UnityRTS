@@ -1988,6 +1988,7 @@ MonoBehaviour:
   _navMeshAgent: {fileID: 1903427591}
   _navMeshObstacle: {fileID: 1903427595}
   _patrolPoints: []
+  _block: 0
   _isMove: 0
   _isCalculatingPath: 0
 --- !u!1 &223681171
@@ -10430,7 +10431,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1b89e378adf3a4c95630a5423c549c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Animator: {fileID: 1135521954}
+  animator: {fileID: 1135521954}
   _attackAnimation: 0
   _movingAnimation: 0
   _deadAnimation: 0
@@ -10698,7 +10699,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1b89e378adf3a4c95630a5423c549c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Animator: {fileID: 1150438312}
+  animator: {fileID: 1150438312}
   _attackAnimation: 0
   _movingAnimation: 0
   _deadAnimation: 0
@@ -11760,7 +11761,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1b89e378adf3a4c95630a5423c549c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Animator: {fileID: 1233701948}
+  animator: {fileID: 1233701948}
   _attackAnimation: 0
   _movingAnimation: 0
   _deadAnimation: 0
@@ -16176,7 +16177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1b89e378adf3a4c95630a5423c549c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Animator: {fileID: 1686510766}
+  animator: {fileID: 1686510766}
   _attackAnimation: 0
   _movingAnimation: 0
   _deadAnimation: 0
@@ -16387,6 +16388,7 @@ MonoBehaviour:
   _navMeshAgent: {fileID: 1233701945}
   _navMeshObstacle: {fileID: 1233701944}
   _patrolPoints: []
+  _block: 0
   _isMove: 0
   _isCalculatingPath: 0
 --- !u!1 &1700875543
@@ -17844,7 +17846,7 @@ MonoBehaviour:
   _canvas: {fileID: 1851291139}
   _healthBarPrefab: {fileID: 4492736100034858949, guid: b53ff28ea104db440b8de9abf0032d73,
     type: 3}
-  _highliterPrefab: {fileID: 2328050315058977160, guid: 41e75fcdd276d344b8244364a2584de9,
+  _highliterPrefab: {fileID: 7210192982477189153, guid: 41e75fcdd276d344b8244364a2584de9,
     type: 3}
   _unitsColor:
     PlayerColor: {r: 0, g: 0.6320754, b: 0.13385133, a: 1}
@@ -18246,6 +18248,7 @@ MonoBehaviour:
   _navMeshAgent: {fileID: 1686510763}
   _navMeshObstacle: {fileID: 1686510762}
   _patrolPoints: []
+  _block: 0
   _isMove: 0
   _isCalculatingPath: 0
 --- !u!1 &1900825152
@@ -18363,7 +18366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1b89e378adf3a4c95630a5423c549c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Animator: {fileID: 1903427593}
+  animator: {fileID: 1903427593}
   _attackAnimation: 0
   _movingAnimation: 0
   _deadAnimation: 0
@@ -19131,6 +19134,7 @@ MonoBehaviour:
   _navMeshAgent: {fileID: 1150438309}
   _navMeshObstacle: {fileID: 1150438308}
   _patrolPoints: []
+  _block: 0
   _isMove: 0
   _isCalculatingPath: 0
 --- !u!1 &1965484264
@@ -20380,6 +20384,7 @@ MonoBehaviour:
   _navMeshAgent: {fileID: 1135521951}
   _navMeshObstacle: {fileID: 1135521950}
   _patrolPoints: []
+  _block: 0
   _isMove: 0
   _isCalculatingPath: 0
 --- !u!1 &2137678347
@@ -20698,6 +20703,7 @@ MonoBehaviour:
   _navMeshAgent: {fileID: 1666553375956392462}
   _navMeshObstacle: {fileID: 1666553375956392461}
   _patrolPoints: []
+  _block: 0
   _isMove: 0
   _isCalculatingPath: 0
 --- !u!1 &1666553375956392460
@@ -20807,7 +20813,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1b89e378adf3a4c95630a5423c549c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Animator: {fileID: 1666553375956392468}
+  animator: {fileID: 1666553375956392468}
   _attackAnimation: 0
   _movingAnimation: 0
   _deadAnimation: 0

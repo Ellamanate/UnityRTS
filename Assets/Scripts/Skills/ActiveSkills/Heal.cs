@@ -2,24 +2,27 @@
 using UnityEditor;
 
 
-public class Heal : ActiveSkill
+namespace Skills
 {
-    public int HealValue { get => _healValue; }
-
-    [SerializeField] private int _healValue;
-
-    public Heal() : base(new SelectBody()) { }
-
-    public override void Effect(SkillCaster _caster, object _target)
+    public class Heal : ActiveSkill
     {
-        if (TypeChecker<IDamageable>.CheckObject(_target, out IDamageable _damageable))
-            _damageable.CurrentHP += _healValue;
-    }
+        public int HealValue { get => _healValue; }
 
-    [MenuItem("Assets/Create/Skills/ActiveSkill/Heal", false, 1)]
-    public static void Create()
-    {
-        Heal original = ScriptableObject.CreateInstance<Heal>();
-        SaveInstance(original, "Active/Heal");
+        [SerializeField] private int _healValue;
+
+        public Heal() : base(new SelectBody()) { }
+
+        public override void Effect(SkillManager caster, object target)
+        {
+            if (TypeChecker<IDamageable>.CheckObject(target, out IDamageable damageable))
+                damageable.CurrentHP += _healValue;
+        }
+
+        [MenuItem("Assets/Create/Skills/ActiveSkill/Heal", false, 1)]
+        public static void Create()
+        {
+            Heal original = ScriptableObject.CreateInstance<Heal>();
+            SaveInstance(original, "Active/Heal");
+        }
     }
 }

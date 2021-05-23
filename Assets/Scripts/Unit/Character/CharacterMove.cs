@@ -1,30 +1,29 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 
 public class CharacterMove : MonoBehaviour
 {
-    public UnityAction PathComplete;
-    public bool IsMove { get => _isMove; }
-    public float Speed { get => _speed; set { if (value >= 0) _speed = value; } }
-    public bool Block { get => _block; set => _block = OnBlock(value); }
-    public Vector3 TargetPos { get => _targetPos; }
-
     [SerializeField] private float _speed;
     [SerializeField] private float _angularSpeed = 2000;
     [SerializeField] private float _stoppingDistance = 0.1f;
     [SerializeField] private CharacterController _controller;
     [SerializeField] private NavMeshAgent _navMeshAgent;
     [SerializeField] private NavMeshObstacle _navMeshObstacle;
-    [SerializeField] private List<Transform> _patrolPoints = new List<Transform>();
     [SerializeField] private bool _block = false;
     [SerializeField] private bool _isMove = false;
     [SerializeField] private bool _isCalculatingPath = false;
-    private Vector3 _targetPos;
+    [SerializeField] private Vector3 _targetPos;
     private Vector3 _gravity = new Vector3(0, -10, 0);
     private IEnumerator _repath;
+    private const float _repathTime = 0.25f;
+
+    public UnityAction PathComplete;
+    public bool IsMove => _isMove;
+    public float Speed { get => _speed; set { if (value >= 0) _speed = value; } }
+    public bool Block { get => _block; set => _block = OnBlock(value); }
+    public Vector3 TargetPos => _targetPos;
 
     public void ResetPath()
     {
@@ -32,14 +31,18 @@ public class CharacterMove : MonoBehaviour
         _targetPos = transform.position;
 
         if (_navMeshAgent.enabled)
+        {
             _navMeshAgent.ResetPath();
+            _navMeshAgent.enabled = false;
+            _navMeshObstacle.enabled = true;
+        }
     }
 
-    public void MoveToPoint(Vector3 _point)
+    public void MoveToPoint(Vector3 point)
     {
         if (!_block)
         {
-            _targetPos = _point;
+            _targetPos = point;
 
             if (!_isCalculatingPath)
             {
@@ -65,7 +68,7 @@ public class CharacterMove : MonoBehaviour
         _navMeshAgent.angularSpeed = _angularSpeed;
         _navMeshAgent.stoppingDistance = _stoppingDistance;
         _targetPos = transform.position;
-        _repath = Repath(0.25f);
+        _repath = Repath(_repathTime);
     }
 
     private void Update()
@@ -86,23 +89,23 @@ public class CharacterMove : MonoBehaviour
         }
     } 
 
-    private bool OnBlock(bool _block)
+    private bool OnBlock(bool block)
     {
-        if (_block & _navMeshAgent.enabled)
+        if (block & _navMeshAgent.enabled)
         {
             _navMeshAgent.velocity = new Vector3(0, 0, 0);
             _navMeshAgent.ResetPath();
         }
 
-        return _block;
+        return block;
     }
 
-    private IEnumerator Repath(float _delay)
+    private IEnumerator Repath(float delay)
     {
         while (true)
         {
             yield return CalculatePath();
-            yield return new WaitForSeconds(_delay);
+            yield return new WaitForSeconds(delay);
         }
     }
 
@@ -125,10 +128,5 @@ public class CharacterMove : MonoBehaviour
         }
 
         yield return null;
-    }
-
-    private Vector3 VectorXZ(Vector3 _vector)
-    {
-        return new Vector3(_vector.x, 0, _vector.z);
     }
 }

@@ -5,15 +5,23 @@ using UnityEngine.UI;
 [System.Serializable]
 public class WorldUIContainer
 {
-    public Transform ContainerTransform;
-    public Transform Highlighter;
+    public Highlighter Highlighter;
     public Image HealthBar;
-    public Transform TargetTransform { get => _targetTransform; }
-
+    private Transform _containerTransform;
     private Transform _targetTransform;
 
-    public WorldUIContainer(Transform _initTargetTransform)
+    public Transform TargetTransform => _targetTransform;
+    public Transform ContainerTransform => _containerTransform;
+
+    public void SinchronizePosition() => _containerTransform.position = _targetTransform.position;
+
+    public void DropHighlighter() => Highlighter = null;
+
+    public WorldUIContainer(Transform targetTransform, Transform containerTransform)
     {
-        _targetTransform = _initTargetTransform;
+        _containerTransform = containerTransform;
+        _targetTransform = targetTransform;
+        Highlighter = null;
+        HealthBar = null;
     }
 }

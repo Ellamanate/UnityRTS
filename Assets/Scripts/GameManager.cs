@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
-    public string PlayersTag { get => _playersTag; }
+    public string PlayersTag => _playersTag;
 
     [SerializeField] private string _playersTag;
 
-    public void CreateCoroutine(IEnumerator _coroutine)
+    public void CreateCoroutine(IEnumerator coroutine)
     {
-        StartCoroutine(_coroutine);
+        StartCoroutine(coroutine);
     }
 }

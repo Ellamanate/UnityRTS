@@ -2,23 +2,24 @@
 using UnityEngine;
 using UnityEngine.Events;
 
+
 public class CharacterAttack : EnemyCollector
 {
-    public DamageType DamageType { get => _damageType; set => _damageType = value; }
-    public int Damage { get => _damage; set { if (value >= 0) _damage = value; } }
-    public bool TargetCollision { get => _targetCollision; }
-    public IDamageable Target { get => _target; set { _target = value; CheckCollision(); } }
-
     public UnityAction OnTargetDead;
     public UnityAction OnTargetCollision;
 
     [SerializeField] private NearestEnemyFinder _nearestEnemyFinder;
     [SerializeField] private DamageType _damageType;
     [SerializeField] private int _damage;
-    private IDamageable _target;
-    private IEnumerator _find;
     [SerializeField] private bool _targetCollision = false;
     [SerializeField] private bool _isTargetSearching = true;
+    private IDamageable _target;
+    private IEnumerator _find;
+
+    public DamageType DamageType => _damageType;
+    public int Damage { get => _damage; set { if (value >= 0) _damage = value; } }
+    public bool TargetCollision => _targetCollision;
+    public IDamageable Target { get => _target; set { _target = value; CheckCollision(); } }
 
     public void SimpleAttack()
     {
@@ -38,15 +39,15 @@ public class CharacterAttack : EnemyCollector
             _isTargetSearching = true;
     }
 
-    public void AttackOrder(IDamageable _newTarget, out bool _collision)
+    public void AttackOrder(IDamageable newTarget, out bool collision)
     {
-        if (Target != _newTarget)
+        if (Target != newTarget)
         {
             _isTargetSearching = false;
-            Target = _newTarget;
+            Target = newTarget;
         }
 
-        _collision = _targetCollision;
+        collision = _targetCollision;
     }
 
     protected override void WhenEnable()
@@ -59,11 +60,11 @@ public class CharacterAttack : EnemyCollector
         StopAllCoroutines();
     }
 
-    protected override void WhenDamageableDestroy(IDamageable _destroyed)
+    protected override void WhenDamageableDestroy(IDamageable destroyed)
     {
         if (this != null) // this == null при одновременной смерти
         {
-            if (_destroyed == Target)
+            if (destroyed == Target)
             {
                 Target = null;
                 _isTargetSearching = true;
@@ -72,15 +73,15 @@ public class CharacterAttack : EnemyCollector
         }
     }
 
-    protected override void WhenDamageableEnter(IDamageable _damageable)
+    protected override void WhenDamageableEnter(IDamageable damageable)
     {
-        if (_damageable == Target)
+        if (damageable == Target)
             CheckCollision();
     }
 
-    protected override void WhenDamageableExit(IDamageable _damageable)
+    protected override void WhenDamageableExit(IDamageable damageable)
     {
-        if (_damageable == Target)
+        if (damageable == Target)
             CheckCollision();
     }
 
@@ -93,7 +94,7 @@ public class CharacterAttack : EnemyCollector
     {
         _targetCollision = false;
 
-        foreach (IDamageable _enemy in DamageablesInRange)
+        foreach (IDamageable _enemy in _damageablesInRange)
         {
             if (_enemy == Target)
             {
@@ -106,38 +107,38 @@ public class CharacterAttack : EnemyCollector
             OnTargetCollision.Invoke();
     }
 
-    private IEnumerator SetTarget(float _timer, float _changeTargetDelay, float _delay)
+    private IEnumerator SetTarget(float timer, float changeTargetDelay, float delay)
     {
         Target = _nearestEnemyFinder.FindNearest();
-        IDamageable _nearestTarget;
+        IDamageable nearestTarget;
 
-        yield return new WaitForSeconds(_delay);
+        yield return new WaitForSeconds(delay);
 
         while (true)
         {
             if (_isTargetSearching == true)
             {
-                _nearestTarget = _nearestEnemyFinder.FindNearest();
+                nearestTarget = _nearestEnemyFinder.FindNearest();
 
-                if (Target != _nearestTarget)
+                if (Target != nearestTarget)
                 {
                     if (Target == null)
                     {
-                        Target = _nearestTarget;
+                        Target = nearestTarget;
                     }
-                    else if (_timer >= _changeTargetDelay)
+                    else if (timer >= changeTargetDelay)
                     {
-                        _timer = 0;
+                        timer = 0;
 
                         if (Random.Range(1, 5) >= 2)
-                            Target = _nearestTarget;
+                            Target = nearestTarget;
                     }
                 }
 
-                _timer += _delay;
+                timer += delay;
             }
 
-            yield return new WaitForSeconds(_delay);
+            yield return new WaitForSeconds(delay);
         }
     }
 }

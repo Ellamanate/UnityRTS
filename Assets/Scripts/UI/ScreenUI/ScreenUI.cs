@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Skills;
+using UnitManagement;
+
 
 public class ScreenUI : Singleton<ScreenUI>
 {
@@ -22,40 +25,35 @@ public class ScreenUI : Singleton<ScreenUI>
     private BackpackPainter _backpackPainter;
     private SkillPainter _skillPainter;
 
-    public void OnSelected(IReadOnlyList<ISelectable> _selectedList)
+    public void OnSelected(IReadOnlyList<ISelectable> selectedList)
     {
-        if (_selectedList.Count > 0)
+        if (selectedList.Count > 0)
         {
-            _selectedUnit = _selectedList[0];
+            _selectedUnit = selectedList[0];
             _selectedIcon.sprite = _selectedUnit.Icon;
 
-            _skillPainter.PaintSkills(_selectedList[0] as Unit);
-            _backpackPainter.PaintItems(_selectedList[0] as Unit);
+            _skillPainter.PaintSkills(selectedList[0] as Unit);
+            _backpackPainter.PaintItems(selectedList[0] as Unit);
 
             UpdateHealthBar(_selectedUnit as IDamageable);
         }
         else { DropTarget(); }
     }
 
-    public void UpdateHealthBar(IDamageable _damageable)
+    public void UpdateHealthBar(IDamageable damageable)
     {
-        if (_selectedUnit != null & _damageable != null)
-            if (_damageable.GameObject == _selectedUnit.GameObject)
-                _healthBar.fillAmount = (float)_damageable.CurrentHP / (float)_damageable.MaxHP;
+        if (_selectedUnit != null & damageable != null)
+            if (damageable.GameObject == _selectedUnit.GameObject)
+                _healthBar.fillAmount = (float)damageable.CurrentHP / (float)damageable.MaxHP;
     }
 
-    public void UpdateManaBar(SkillCaster _caster)
+    public void UpdateManaBar(SkillManager caster)
     {
-        if (_selectedUnit != null & _caster != null)
-            if (_caster == _selectedUnit.GameObject.GetComponent<SkillCaster>())
-                _skillPainter.UpdateManaBar(_caster);
-    }
-
-    public void OnSkillActivate(SkillManager _skillManager)
-    {
-        if (_skillManager != null & _selectedUnit != null)
-            if (_skillManager.Caster == _selectedUnit.GameObject.GetComponent<SkillCaster>())
-                _skillPainter.UpdateSkillsCoolDown(_skillManager);
+        if (_selectedUnit != null & caster != null)
+        {
+            if (caster == _selectedUnit.GameObject.GetComponent<SkillManager>())
+                _skillPainter.UpdateManaBar(caster);
+        }
     }
 
     public bool IsMouseEscapeUI()
@@ -81,7 +79,6 @@ public class ScreenUI : Singleton<ScreenUI>
     private void OnEnable()
     {
         Events.OnSelectedChange.Subscribe(OnSelected);
-        Events.OnSkillActivate.Subscribe(OnSkillActivate);
         Events.OnDamageableHPChange.Subscribe(UpdateHealthBar);
         Events.OnSkillCasterMPChange.Subscribe(UpdateManaBar);
         Events.OnUnitDestroy.Subscribe(OnUnitDestroy);
@@ -92,7 +89,6 @@ public class ScreenUI : Singleton<ScreenUI>
     private void OnDisable()
     {
         Events.OnSelectedChange.UnSubscribe(OnSelected);
-        Events.OnSkillActivate.UnSubscribe(OnSkillActivate);
         Events.OnDamageableHPChange.UnSubscribe(UpdateHealthBar);
         Events.OnSkillCasterMPChange.UnSubscribe(UpdateManaBar);
         Events.OnUnitDestroy.UnSubscribe(OnUnitDestroy);
@@ -100,14 +96,14 @@ public class ScreenUI : Singleton<ScreenUI>
         Events.OnItemDrop.UnSubscribe(OnItemDrop);
     }
 
-    private void OnItemCollect(BaseItem _item)
+    private void OnItemCollect(BaseItem item)
     {
         _backpackPainter.PaintItems(_selectedUnit as Unit);
     }
 
-    private void OnItemDrop(int _id)
+    private void OnItemDrop(int id)
     {
-        _backpackPainter.RemoveItemById(_id);
+        _backpackPainter.RemoveItemById(id);
     }
 
     private void OnUnitDestroy(IDamageable _destroyed)

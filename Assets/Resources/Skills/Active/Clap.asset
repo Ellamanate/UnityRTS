@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15a6e74937f33b94996bfe34997c72b9, type: 3}
   m_Name: Clap
   m_EditorClassIdentifier: 
+  _sprite: {fileID: 21300000, guid: 172774604c1bee84185a69041576525b, type: 3}
   _coolDown: 2
   _manaCost: 10
   _damageValue: 10

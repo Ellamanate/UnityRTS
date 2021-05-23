@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffbd67ca42a12304584f0565fcca478b, type: 3}
   m_Name: ForceWave
   m_EditorClassIdentifier: 
+  _sprite: {fileID: 21300000, guid: 5fd50594014b70e48bd6993443d46b32, type: 3}
   _coolDown: 2
   _manaCost: 10
   _damageValue: 10

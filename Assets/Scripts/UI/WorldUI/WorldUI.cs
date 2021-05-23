@@ -2,21 +2,22 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using UnitManagement;
 
 public class WorldUI : Singleton<WorldUI>
 {
     [SerializeField] private Canvas _canvas;
     [SerializeField] private Image _healthBarPrefab;
-    [SerializeField] private GameObject _highliterPrefab;
+    [SerializeField] private Highlighter _highliterPrefab;
     [SerializeField] private UnitsColor _unitsColor;
     [SerializeField] private Transform _hilightersPool;
-    private Transform[] _highliters;
-    private List<WorldUIContainer> UnitsUI = new List<WorldUIContainer>();
-    private ObjectPool _objectPool;
+    private Highlighter[] _highliters;
+    private ObjectPool<Highlighter> _objectPool;
+    private Dictionary<GameObject, WorldUIContainer> _containers = new Dictionary<GameObject, WorldUIContainer>();
 
     private void Awake()
     {
-        _objectPool = new ObjectPool(_highliterPrefab, _hilightersPool);
+        _objectPool = new ObjectPool<Highlighter>(_highliterPrefab, _hilightersPool);
     }
 
     private void OnEnable()
@@ -35,83 +36,94 @@ public class WorldUI : Singleton<WorldUI>
 
     private void LateUpdate()
     {
-        for (int i = 0; i < UnitsUI.Count; i++)
-            UnitsUI[i].ContainerTransform.position = UnitsUI[i].TargetTransform.position;
+        foreach (WorldUIContainer container in _containers.Values)
+            container.SinchronizePosition();
     }
 
-    public void RegistrUnit(WorldUIContainer _unitUI)
+    public void RegistrEntity(IDamageable damageable)
     {
-        GameObject _container = new GameObject();
-        _unitUI.ContainerTransform = _container.transform;
-        _container.transform.SetParent(_canvas.transform);
-        UnitsUI.Add(_unitUI);
-    }
-
-    public void OnUnitDestroy(IDamageable _destroyed)
-    {
-        HideDamageableUI(_destroyed);
-    }
-
-    public void HideDamageableUI(IDamageable _destroyed)
-    {
-        _objectPool.BackToPool(_destroyed.WorldUIContainer.Highlighter);
-        _destroyed.WorldUIContainer.Highlighter = null;
-        UnitsUI.Remove(_destroyed.WorldUIContainer);
-        Destroy(_destroyed.WorldUIContainer.ContainerTransform.gameObject);
-    }
-
-    public void SetHealthBar(ISelectable _target, Vector3 _offset)
-    {
-        Image _healthBarImage = Instantiate(_healthBarPrefab);
-        _healthBarImage.transform.SetParent(_target.WorldUIContainer.ContainerTransform);
-        _healthBarImage.transform.localPosition = _offset;
-        _target.WorldUIContainer.HealthBar = _healthBarImage;
-    }
-
-    public void UpdateHealthBar(IDamageable _damageable)
-    {
-        if (_damageable.WorldUIContainer.HealthBar != null)
-            _damageable.WorldUIContainer.HealthBar.fillAmount = (float)_damageable.CurrentHP / (float)_damageable.MaxHP;
-    }
-
-    public void HighlightThis(IReadOnlyList<ISelectable> _selected)
-    {
-        if (_selected.Count != 0)
+        if (!_containers.ContainsKey(damageable.GameObject)) 
         {
-            _highliters = _objectPool.GetObjects(_selected.Count);
+            GameObject containerObject = new GameObject();
+            WorldUIContainer container = new WorldUIContainer(damageable.GameObject.transform, containerObject.transform);
+            containerObject.transform.SetParent(_canvas.transform);
 
-            for (int i = 0; i < _selected.Count; i++)
+            _containers.Add(damageable.GameObject, container);
+        }
+    }
+
+    public void OnUnitDestroy(IDamageable destroyed)
+    {
+        HideDamageableUI(destroyed);
+    }
+
+    public void HideDamageableUI(IDamageable destroyed)
+    {
+        if (_containers.TryGetValue(destroyed.GameObject, out WorldUIContainer container))
+        {
+            _objectPool.BackToPool(container.Highlighter);
+            container.Highlighter = null;
+            _containers.Remove(destroyed.GameObject);
+
+            Destroy(container.ContainerTransform.gameObject);
+        }
+    }
+
+    public void CreateHealthBar(IDamageable damageable, Vector3 offset)
+    {
+        if (_containers.TryGetValue(damageable.GameObject, out WorldUIContainer container))
+        {
+            Image healthBarImage = Instantiate(_healthBarPrefab);
+            healthBarImage.transform.SetParent(container.ContainerTransform);
+            healthBarImage.transform.localPosition = offset;
+            container.HealthBar = healthBarImage;
+        }
+    }
+
+    public void UpdateHealthBar(IDamageable damageable)
+    {
+        if (_containers.TryGetValue(damageable.GameObject, out WorldUIContainer container) && container.HealthBar != null)
+            container.HealthBar.fillAmount = (float)damageable.CurrentHP / (float)damageable.MaxHP;
+    }
+
+    public void HighlightThis(IReadOnlyList<ISelectable> selected)
+    {
+        if (selected.Count != 0)
+        {
+            _highliters = _objectPool.GetObjects(selected.Count);
+
+            for (int i = 0; i < selected.Count; i++)
             {
-                Transform _selectedTransform = _selected[i].HitBox.transform;
-                Transform _highliter = _highliters[i];
-                _highliter.SetParent(_selected[i].WorldUIContainer.ContainerTransform);
-                _highliter.localPosition = new Vector3(0, 0.2f, 0);
-                _highliter.localScale = _selectedTransform.lossyScale;
-                _highliter.gameObject.GetComponent<RawImage>().color = GetColor(_selectedTransform.tag);
-                _selected[i].WorldUIContainer.Highlighter = _highliter;
+                if (_containers.TryGetValue(selected[i].GameObject, out WorldUIContainer container))
+                {
+                    Transform selectedTransform = selected[i].HitBox.transform;
+                    _highliters[i].Init(container, selectedTransform);
+                    _highliters[i].SetColor(GetColor(selectedTransform.tag));
+                    container.Highlighter = _highliters[i];
+                }
             }
         }
         else
         {
             _objectPool.BackToPoolAll();
 
-            for (int i = 0; i < UnitsUI.Count; i++)
-                UnitsUI[i].Highlighter = null;
+            foreach (WorldUIContainer container in _containers.Values)
+                container.DropHighlighter();
         }
     }
 
-    private Color GetColor(string _tag)
+    private Color GetColor(string tag)
     {
-        Color _color;
+        Color color;
 
-        if (_tag == GameManager.Instance.PlayersTag)
-            _color = _unitsColor.PlayerColor;
-        else if (AllianceSystem.Instance.GetEnemyTags(GameManager.Instance.PlayersTag).Contains(_tag))
-            _color = _unitsColor.EnemyColor;
+        if (tag == GameManager.Instance.PlayersTag)
+            color = _unitsColor.PlayerColor;
+        else if (AllianceSystem.Instance.GetEnemyTags(GameManager.Instance.PlayersTag).Contains(tag))
+            color = _unitsColor.EnemyColor;
         else
-            _color = _unitsColor.NeutralColor;
+            color = _unitsColor.NeutralColor;
 
-        return _color;
+        return color;
     }
 }
 
@@ -122,5 +134,3 @@ public struct UnitsColor
     public Color EnemyColor;
     public Color NeutralColor;
 }
-
-

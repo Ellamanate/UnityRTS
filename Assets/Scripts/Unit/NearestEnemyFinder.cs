@@ -1,17 +1,17 @@
 ﻿using UnityEngine;
-using System.Linq;
+
 
 public class NearestEnemyFinder : EnemyCollector
 {
     public IDamageable FindNearest()
     {
-        if (EnemysInRange.Count == 1)
-            return EnemysInRange.ElementAt<Unit>(0);
+        if (_enemysInRange.Count == 1)
+            return _enemysInRange[0];
 
         Unit _potentialTarget = null;
         float _minDistance = Mathf.Infinity;
 
-        foreach (Unit _enemy in EnemysInRange)
+        foreach (Unit _enemy in _enemysInRange)
         {
             float _distance = Vector3.Distance(transform.position, _enemy.GameObject.transform.position);
 

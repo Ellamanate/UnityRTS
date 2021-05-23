@@ -1,26 +1,24 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 
 public abstract class EnemyCollector : MonoBehaviour
 {
-    public IReadOnlyCollection<IDamageable> DamageablesInRange { get => _damageablesInRange.AsReadOnly(); }
-    public IReadOnlyCollection<Unit> EnemysInRange { get => _enemysInRange.AsReadOnly(); }
-
-    [SerializeField] private List<IDamageable> _damageablesInRange = new List<IDamageable>();
-    [SerializeField] private List<Unit> _enemysInRange = new List<Unit>();
+    [SerializeField] protected List<IDamageable> _damageablesInRange = new List<IDamageable>();
+    [SerializeField] protected List<Unit> _enemysInRange = new List<Unit>();
     private IReadOnlyCollection<string> _enemyTags;
+
+    public bool IsDamageableInRange(IDamageable damageable) => _damageablesInRange.Contains(damageable);
 
     protected virtual void WhenEnable() { }
 
     protected virtual void WhenDisable() { }
 
-    protected virtual void WhenDamageableDestroy(IDamageable _destroyed) { }
+    protected virtual void WhenDamageableDestroy(IDamageable destroyed) { }
 
-    protected virtual void WhenDamageableEnter(IDamageable _damageable) { }
+    protected virtual void WhenDamageableEnter(IDamageable damageable) { }
 
-    protected virtual void WhenDamageableExit(IDamageable _damageable) { }
+    protected virtual void WhenDamageableExit(IDamageable damageable) { }
 
     private void OnEnable()
     {
@@ -44,74 +42,74 @@ public abstract class EnemyCollector : MonoBehaviour
         WhenDamageableDestroy(_destroyed);
     }
 
-    private void SetEnemyTags(IReadOnlyCollection<string> _newTags)
+    private void SetEnemyTags(IReadOnlyCollection<string> newTags)
     {
-        if (_newTags != null)
+        if (newTags != null)
         {
             if (_enemyTags.Count == 0)
             {
-                _enemyTags = _newTags;
+                _enemyTags = newTags;
             }
-            else if (_newTags.Count != 0)
+            else if (newTags.Count != 0)
             {
                 List<Unit> _newEnemys = new List<Unit>();
 
                 foreach (Unit _enemy in _damageablesInRange)
                 {
-                    foreach (string _enemyTag in _newTags)
+                    foreach (string _enemyTag in newTags)
                     {
                         if (_enemy.gameObject.CompareTag(_enemyTag))
                             _newEnemys.Add(_enemy);
                     }
                 }
 
-                _enemyTags = _newTags;
+                _enemyTags = newTags;
                 _enemysInRange = _newEnemys;
             }
             else
             {
-                _enemyTags = _newTags;
+                _enemyTags = newTags;
                 _enemysInRange.Clear();
             }
         }
     }
 
-    private void OnTriggerEnter(Collider _collider)
+    private void OnTriggerEnter(Collider collider)
     {
-        if (TypeChecker<IDamageable>.CheckCollider(_collider, out IDamageable _damageable))
+        if (TypeChecker<IDamageable>.CheckCollider(collider, out IDamageable _damageable))
         {
             _damageablesInRange.Add(_damageable);
 
-            if (IsEnemyCollider(_collider, out Unit _unit))
+            if (IsEnemyCollider(collider, out Unit _unit))
                 _enemysInRange.Add(_unit);
 
             WhenDamageableEnter(_damageable);
         }
     }
 
-    private void OnTriggerExit(Collider _collider)
+    private void OnTriggerExit(Collider collider)
     {
-        if (TypeChecker<IDamageable>.CheckCollider(_collider, out IDamageable _damageable))
+        if (TypeChecker<IDamageable>.CheckCollider(collider, out IDamageable _damageable))
         {
             _damageablesInRange.Remove(_damageable);
 
-            if (IsEnemyCollider(_collider, out Unit _unit))
+            if (IsEnemyCollider(collider, out Unit _unit))
                 _enemysInRange.Remove(_unit);
 
             WhenDamageableExit(_damageable);
         }
     }
 
-    private bool IsEnemyCollider (Collider _collider, out Unit _unit)
+    private bool IsEnemyCollider (Collider collider, out Unit unit)
     {
-        if (_collider.attachedRigidbody != null)
-            _unit = _collider.attachedRigidbody.GetComponent<Unit>();
+        if (collider.attachedRigidbody != null)
+            unit = collider.attachedRigidbody.GetComponent<Unit>();
         else
-            _unit = null;
+            unit = null;
 
-        if (_unit != null)
+        if (unit != null)
         {
-            string _collisionTag = _collider.tag;
+            string _collisionTag = collider.tag;
 
             foreach (string _enemyTag in _enemyTags)
             {

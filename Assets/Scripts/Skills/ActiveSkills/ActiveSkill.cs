@@ -1,24 +1,25 @@
 ﻿using UnityEngine;
 
 
-public abstract class ActiveSkill : ProtoSkill
+namespace Skills
 {
-    public int ManaCost { get => _manaCost; }
-
-    [SerializeField] private int _manaCost;
-
-    public ActiveSkill(SkillTargetSelector _skillTargetSelector) : base(_skillTargetSelector, true) { }
-
-    public override void Activate(SkillCaster _caster, object _target)
+    public abstract class ActiveSkill : ProtoSkill
     {
-        if (_caster.CurrentMP >= _manaCost)
+        public int ManaCost { get => _manaCost; }
+
+        [SerializeField] private int _manaCost;
+
+        public ActiveSkill(SkillTargetSelector skillTargetSelector) : base(skillTargetSelector, true) { }
+
+        public override void Activate(SkillManager caster, object target)
         {
-            _caster.CurrentMP -= _manaCost;
-            Effect(_caster, _target);
+            if (caster.CurrentMP >= _manaCost)
+            {
+                caster.CurrentMP -= _manaCost;
+                Effect(caster, target);
+            }
         }
+
+        public virtual void Effect(SkillManager caster, object target) { }
     }
-
-    public virtual void Effect(SkillCaster _caster, object _target) { }
 }
-
-

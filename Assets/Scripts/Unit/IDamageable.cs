@@ -14,8 +14,6 @@ public interface IDamageable
 
     GameObject GameObject { get; }
 
-    WorldUIContainer WorldUIContainer { get; }
-
     void ApplyDamage(DamageType _damageType, int _applyedDamage);
 
     void Destroy();

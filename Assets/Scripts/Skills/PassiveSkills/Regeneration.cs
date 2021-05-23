@@ -3,35 +3,38 @@ using UnityEngine;
 using System.Collections;
 
 
-public class Regeneration : PassiveSkill
+namespace Skills
 {
-    public int HealValue { get => _healValue; }
-
-    [SerializeField] private int _healValue;
-
-    public override void OnStart(SkillCaster _caster)
+    public class Regeneration : PassiveSkill
     {
-        IEnumerator _heal = Heal(_caster);
-        GameManager.Instance.CreateCoroutine(_heal);
-    }
+        public int HealValue => _healValue;
 
-    public IEnumerator Heal(SkillCaster _caster)
-    {
-        yield return new WaitForSeconds(CoolDown);
+        [SerializeField] private int _healValue;
 
-        while (_caster != null)
+        public override void OnStart(SkillManager caster)
         {
-            if (TypeChecker<Unit>.CheckGameObject(_caster.gameObject, out Unit _unit))
-                _unit.CurrentHP += _healValue;
-
-            yield return new WaitForSeconds(CoolDown);
+            IEnumerator heal = Heal(caster);
+            GameManager.Instance.CreateCoroutine(heal);
         }
-    }
 
-    [MenuItem("Assets/Create/Skills/PassiveSkill/Regeneration", false, 1)]
-    public static void Create()
-    {
-        Regeneration original = ScriptableObject.CreateInstance<Regeneration>();
-        SaveInstance(original, "Passive/Regeneration");
+        public IEnumerator Heal(SkillManager caster)
+        {
+            yield return new WaitForSeconds(CoolDown);
+
+            while (caster != null)
+            {
+                if (TypeChecker<Unit>.CheckGameObject(caster.gameObject, out Unit unit))
+                    unit.CurrentHP += _healValue;
+
+                yield return new WaitForSeconds(CoolDown);
+            }
+        }
+
+        [MenuItem("Assets/Create/Skills/PassiveSkill/Regeneration", false, 1)]
+        public static void Create()
+        {
+            Regeneration original = ScriptableObject.CreateInstance<Regeneration>();
+            SaveInstance(original, "Passive/Regeneration");
+        }
     }
 }

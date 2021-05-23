@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using System;
+using Skills;
+using UnitManagement;
+
 
 public static class Events
 {
-    public static EventAggregator<SkillManager> OnSkillActivate = new EventAggregator<SkillManager>();
     public static EventAggregator<BaseItem> OnItemCollect = new EventAggregator<BaseItem>();
     public static EventAggregator<int> OnItemDrop = new EventAggregator<int>();
     public static EventAggregator<IDamageable> OnDamageableHPChange = new EventAggregator<IDamageable>();
-    public static EventAggregator<SkillCaster> OnSkillCasterMPChange = new EventAggregator<SkillCaster>();
+    public static EventAggregator<SkillManager> OnSkillCasterMPChange = new EventAggregator<SkillManager>();
     public static EventAggregator<IReadOnlyList<ISelectable>> OnSelectedChange = new EventAggregator<IReadOnlyList<ISelectable>>();
     public static EventAggregator<IDamageable> OnUnitDestroy = new EventAggregator<IDamageable>();
     public static EventAggregator<IReadOnlyList<string>> OnChangeAlliance = new EventAggregator<IReadOnlyList<string>>();
